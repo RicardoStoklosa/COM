@@ -8,7 +8,7 @@
 void extern yyerror(char*);
 void TokenInvalido();
 %}
-
+%option yylineno
 
 %%
 
