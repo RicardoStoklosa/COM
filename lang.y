@@ -52,106 +52,118 @@
     T_TYPE
 
 %%
-prog: T_PROGRAM T_IDENTIFIER T_SEMICOLON bloco T_DOT    {printf("%s",$2);}
+prog: T_PROGRAM T_IDENTIFIER T_SEMICOLON bloco T_DOT
     ;
 
-bloco: var
-     | procedure
-     | command_end
+bloco: bloco2 bloco5 T_START comando T_SEMICOLON bloco6 bloco7 T_END
      ;
 
-var: /* EPSILON */
-    | T_VARIABLE ident var
+bloco2:
+      | T_VARIABLE T_IDENTIFIER bloco4 T_COLON T_TYPE T_SEMICOLON bloco3 bloco2
+      ;
+
+bloco3:
+      | T_IDENTIFIER bloco4 T_COLON T_TYPE T_SEMICOLON bloco3
+      ;
+
+bloco4:
+      | T_COMMA T_IDENTIFIER bloco4
+      ;
+
+bloco5:
+      | T_PROCEDURE T_IDENTIFIER palist T_SEMICOLON bloco T_SEMICOLON bloco5
+      ;
+
+bloco6:
+      | comando T_SEMICOLON bloco6
+      ;
+
+bloco7:
+      | T_SEMICOLON
+      ;
+
+palist:
+      | T_OPEN_PARENTHESES palist3 T_IDENTIFIER T_COMMA palist4 T_COLON T_TYPE T_SEMICOLON palist2 T_CLOSE_PARENTHESES
+      ;
+
+palist2:
+       | palist3 T_IDENTIFIER T_COMMA palist4 T_COLON T_TYPE T_SEMICOLON palist2
+       ;
+
+palist3:
+       | T_VARIABLE
+       ;
+
+palist4:
+       | T_IDENTIFIER T_COMMA palist4
+       ;
+
+comando: T_IDENTIFIER T_ATRIBUITION expr
+       | T_PROCEDURE comando2
+       | T_IF expr T_THEN comando comando4
+       | T_WHILE expr T_DO comando
+       | T_START comando comando5 T_END
+       ;
+
+comando2: 
+        | T_OPEN_PARENTHESES expr T_COMMA comando3 T_CLOSE_PARENTHESES
+        ;
+
+comando3:
+        | expr T_COMMA comando3
+        ;
+    
+comando4:
+        | T_ELSE comando
+        ;
+
+comando5:
+        | T_SEMICOLON comando comando5
+        ;
+
+expr: siexpr expr2
     ;
 
-ident: T_IDENTIFIER comma_ident T_COLON T_TYPE T_SEMICOLON
-     | T_IDENTIFIER comma_ident T_COLON T_TYPE T_SEMICOLON ident
+expr2:
+     | T_LESS siexpr
+     | T_MORE siexpr
+     | T_DIFERENT siexpr
+     | T_LESS_EQUALS siexpr
+     | T_MORE_EQUALS siexpr
      ;
 
-comma_ident: /* EPSILON */
-           | T_COMMA T_IDENTIFIER comma_ident
-           ;
+siexpr: siexpr2 termo siexpr3
+      ;
 
-procedure:/* EPSILON */
-         | T_PROCEDURE T_IDENTIFIER palist T_SEMICOLON bloco T_SEMICOLON procedure T_START
+siexpr2:
+       | T_PLUS
+       | T_MINUS
+       ;
+
+siexpr3:
+       | operador2 termo siexpr3
+       ;
+
+operador2: T_PLUS
+         | T_MINUS
          ;
 
-command_end: command_semicolon T_SEMICOLON T_END command_end_epsilon
-           | command_semicolon T_END command_end_epsilon
-           ;
+termo: fator termo2
+     ;
 
-command_end_epsilon:
-                   | command_semicolon T_SEMICOLON T_END command_semicolon_epsilon
-                   | command_semicolon T_END command_semicolon_epsilon
-                   ;
-
-command_semicolon: command T_SEMICOLON command_semicolon_epsilon
-                 ;
-
-command_semicolon_epsilon:
-                         | command T_SEMICOLON command_semicolon_epsilon
-                         ;
-
-palist:/* EPSILON */
-      | T_OPEN_PARENTHESES var_palist T_CLOSE_PARENTHESES
+termo2:
+      | operador fator termo2
       ;
 
-var_palist: T_VARIABLE ident_comma T_COLON T_TYPE T_SEMICOLON var_parlist_epsilon
-          | ident_comma T_COLON T_TYPE T_SEMICOLON var_parlist_epsilon
-          ;
+operador: T_MULTIPLY
+        | T_DIVIDE
+        | T_MODULE
+        ;
 
-var_parlist_epsilon:
-                   | T_VARIABLE ident_comma T_COLON T_TYPE T_SEMICOLON var_parlist_epsilon
-                   | ident_comma T_COLON T_TYPE T_SEMICOLON var_parlist_epsilon
-                     ;
-
-ident_comma: T_IDENTIFIER T_COMMA ident_comma
-           ;
-
-command: T_VARIABLE T_ATRIBUITION expr
-       | proc
-       | T_IF expr T_THEN command T_ELSE command
-       | T_IF expr T_THEN command
-       | T_WHILE expr T_DO command
-       | T_START command_semicolon T_END
-       ;
-
-proc: T_PROCEDURE T_OPEN_PARENTHESES expr_comma T_CLOSE_PARENTHESES
-    | T_PROCEDURE
-    ;
-
-expr_comma: expr T_COMMA expr_comma
-          ;
-
-expr: siexpr
-    | siexpr compare siexpr
-    ;
-
-compare: T_EQUALS
-       | T_LESS
-       | T_MORE
-       | T_DIFERENT
-       | T_LESS_EQUALS
-       | T_MORE_EQUALS
-       ;
-
-siexpr: T_PLUS term_symbol
-      | T_MINUS term_symbol
-      ;
-
-term_symbol: term T_PLUS term_symbol
-           | term T_MINUS term_symbol
-           ;
-
-term: factor T_MULTIPLY term
-    | factor T_DIVIDE term
-    | factor T_MODULE term
-    ;
-
-factor: T_NUMBER
-      | T_IDENTIFIER
-      | T_OPEN_PARENTHESES expr T_CLOSE_PARENTHESES
-      ;
+fator: T_NUMBER
+     | T_IDENTIFIER
+     | T_OPEN_PARENTHESES expr T_CLOSE_PARENTHESES
+     ;
 
 %%
 
@@ -159,9 +171,6 @@ int main() {
 	yyin = stdin;
 
 	do {
-        char line[256];
-        fgets(line, sizeof(line), yyin);
-        fprintf(stderr, "%s",line);
 		yyparse();
 	} while(!feof(yyin));
 
@@ -173,6 +182,6 @@ void yyerror(const char* s) {
     /*fgets(line, sizeof(line), yyin);*/
     /*fprintf(stderr, "%s",line);*/
     fprintf(stderr, "ERRO EM [%d:%d]: %s\n",yylloc.first_line, yylloc.first_column, yylval.str);
-    fprintf(stderr, "%s",s);
+    fprintf(stderr, "%s\n",s);
     exit(1);
 }
