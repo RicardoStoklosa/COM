@@ -8,17 +8,18 @@
     void yyerror(const char* s);
 
 %}
-
+%define parse.error verbose
 %locations
 
 %union {
+    char* str;
     char* indentifier;
     int number;
 }
 
 %token<indentifier>    T_IDENTIFIER
 %token<number>          T_NUMBER
-
+%start prog
 %token
     T_PROGRAM
     T_SEMICOLON
@@ -75,20 +76,34 @@ procedure:/* EPSILON */
          | T_PROCEDURE T_IDENTIFIER palist T_SEMICOLON bloco T_SEMICOLON procedure T_START
          ;
 
-command_end: command_semicolon T_SEMICOLON T_END
-           | command_semicolon T_END
+command_end: command_semicolon T_SEMICOLON T_END command_end_epsilon
+           | command_semicolon T_END command_end_epsilon
            ;
 
-command_semicolon: command T_SEMICOLON command_semicolon
+command_end_epsilon:
+                   | command_semicolon T_SEMICOLON T_END command_semicolon_epsilon
+                   | command_semicolon T_END command_semicolon_epsilon
+                   ;
+
+command_semicolon: command T_SEMICOLON command_semicolon_epsilon
                  ;
 
+command_semicolon_epsilon:
+                         | command T_SEMICOLON command_semicolon_epsilon
+                         ;
+
 palist:/* EPSILON */
-      T_OPEN_PARENTHESES var_palist T_CLOSE_PARENTHESES
+      | T_OPEN_PARENTHESES var_palist T_CLOSE_PARENTHESES
       ;
 
-var_palist: T_VARIABLE ident_comma T_COLON T_TYPE T_SEMICOLON var_palist
-          | ident_comma T_COLON T_TYPE T_SEMICOLON var_palist
+var_palist: T_VARIABLE ident_comma T_COLON T_TYPE T_SEMICOLON var_parlist_epsilon
+          | ident_comma T_COLON T_TYPE T_SEMICOLON var_parlist_epsilon
           ;
+
+var_parlist_epsilon:
+                   | T_VARIABLE ident_comma T_COLON T_TYPE T_SEMICOLON var_parlist_epsilon
+                   | ident_comma T_COLON T_TYPE T_SEMICOLON var_parlist_epsilon
+                     ;
 
 ident_comma: T_IDENTIFIER T_COMMA ident_comma
            ;
@@ -144,6 +159,9 @@ int main() {
 	yyin = stdin;
 
 	do {
+        char line[256];
+        fgets(line, sizeof(line), yyin);
+        fprintf(stderr, "%s",line);
 		yyparse();
 	} while(!feof(yyin));
 
@@ -151,6 +169,10 @@ int main() {
 }
 
 void yyerror(const char* s) {
-    fprintf(stderr, "Parse error:%d %s\n", yylineno,s);
+    /*char line[256];*/
+    /*fgets(line, sizeof(line), yyin);*/
+    /*fprintf(stderr, "%s",line);*/
+    fprintf(stderr, "ERRO EM [%d:%d]: %s\n",yylloc.first_line, yylloc.first_column, yylval.str);
+    fprintf(stderr, "%s",s);
     exit(1);
 }

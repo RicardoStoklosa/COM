@@ -1,8 +1,7 @@
 programa TESTE;
 var
    x,z : inteiro;
-   y : inteiro;
-inicio
+   y : inteiro; inicio
    x := -12;
    y := 12;
    enquanto x < 12

@@ -7,6 +7,18 @@
 #include "lang.tab.h"
 void extern yyerror(char*);
 void TokenInvalido();
+int yycolumn = 1;
+
+#define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
+    yylloc.first_column = yycolumn; yylloc.last_column = yycolumn + yyleng - 1; \
+    yycolumn += yyleng; \
+    yylval.str = strdup(yytext);
+
+/*#define YY_INPUT(buf,result,max_size) { \*/
+        /*result = GetNextChar(buf, max_size); \*/
+        /*if( result <=0 ) \*/
+            /*result = YY_NULL; \*/
+        /*}*/
 %}
 %option yylineno
 
@@ -47,7 +59,7 @@ void TokenInvalido();
 [0-9]+                      {yylval.number = atoi(yytext); return T_NUMBER;}
 
 [ \t] ;
-\n
+\n                          {yycolumn = 1;}
 .                           {TokenInvalido();}
 
 %%
