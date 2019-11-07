@@ -1,0 +1,25 @@
+programa TESTE;
+var
+   x,z : inteiro;
+   y : inteiro; inicio
+   x := -12;
+   y := 12;
+   enquanto x < 12
+   faca
+      inicio
+         x := x + 1;
+         y := y + x;
+      fim;
+   enquanto y < 12
+   faca
+      y := y + 1;
+   se x <> y
+   entao
+      x := 5;
+   senao
+      inicio
+         x := 78;
+         y := 99;
+         z := 97;
+      fim;
+fim.

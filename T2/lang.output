@@ -1,0 +1,1092 @@
+Terminals unused in grammar
+
+    T_NUMBER
+    T_NOT
+    T_AND
+    T_OR
+    T_PLUS
+    T_MINUS
+    T_MULTIPLY
+    T_DIVIDE
+    T_EQUALS
+    T_DIFERENT
+    T_LESS
+    T_MORE
+    T_LESS_EQUALS
+    T_MORE_EQUALS
+
+
+State 36 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: functionList mainBlock
+    2        | mainBlock
+
+    3 functionList: functionList function
+    4             | function
+
+    5 function: returnType T_IDENTIFIER T_OPEN_PARENTHESES declareParams T_CLOSE_PARENTHESES mainBlock
+    6         | returnType T_IDENTIFIER T_OPEN_PARENTHESES T_CLOSE_PARENTHESES mainBlock
+
+    7 returnType: type
+    8           | T_VOID
+
+    9 declareParams: declareParams T_COMMA param
+   10              | param
+
+   11 param: type T_IDENTIFIER
+
+   12 mainBlock: T_OPEN_BRACE declarations cmdList T_CLOSE_BRACE
+   13          | T_OPEN_BRACE cmdList T_CLOSE_BRACE
+
+   14 declarations: declarations declare
+   15             | declare
+
+   16 declare: type idList
+
+   17 type: T_INTEGER
+   18     | T_STRING
+   19     | T_FLOAT
+
+   20 idList: idList T_COMMA T_IDENTIFIER
+   21       | T_IDENTIFIER
+
+   22 block: T_OPEN_BRACE cmdList T_CLOSE_BRACE
+
+   23 cmdList: cmdList command
+   24        | command
+
+   25 command: cmdIf
+   26        | cmdWhile
+   27        | cmdAtribuition
+   28        | cmdPrint
+   29        | cmdRead
+   30        | procCall
+   31        | return
+
+   32 return: T_RETURN arithmeticExpression T_SEMICOLON
+   33       | T_LITERAL
+
+   34 cmdIf: T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
+   35      | T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block block
+
+   36 cmdWhile: T_WHILE T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
+
+   37 cmdAtribuition: T_IDENTIFIER T_ATRIBUITION logicExpression T_SEMICOLON
+   38               | T_IDENTIFIER T_ATRIBUITION T_LITERAL
+
+   39 cmdPrint: T_PRINT T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES T_SEMICOLON
+   40         | T_PRINT T_OPEN_PARENTHESES T_LITERAL T_CLOSE_PARENTHESES
+
+   41 cmdRead: T_READ T_OPEN_PARENTHESES T_IDENTIFIER T_CLOSE_PARENTHESES T_SEMICOLON
+
+   42 procCall: functionCall T_SEMICOLON
+
+   43 functionCall: T_IDENTIFIER T_OPEN_PARENTHESES paramList T_CLOSE_PARENTHESES
+   44             | T_IDENTIFIER T_OPEN_PARENTHESES T_CLOSE_PARENTHESES
+
+   45 paramList: paramList T_COMMA arithmeticExpression
+   46          | paramList T_COMMA T_LITERAL
+   47          | arithmeticExpression
+   48          | T_LITERAL
+
+   49 arithmeticExpression: %empty
+
+   50 logicExpression: %empty
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    T_IDENTIFIER <indentifier> (258) 5 6 11 20 21 37 38 41 43 44
+    T_NUMBER <number> (259)
+    T_RETURN (260) 32
+    T_IF (261) 34 35
+    T_ELSE (262)
+    T_WHILE (263) 36
+    T_PRINT (264) 39 40
+    T_READ (265) 41
+    T_VOID (266) 8
+    T_INTEGER (267) 17
+    T_STRING (268) 18
+    T_FLOAT (269) 19
+    T_OPEN_PARENTHESES (270) 5 6 34 35 36 39 40 41 43 44
+    T_CLOSE_PARENTHESES (271) 5 6 34 35 36 39 40 41 43 44
+    T_OPEN_BRACE (272) 12 13 22
+    T_CLOSE_BRACE (273) 12 13 22
+    T_COMMA (274) 9 20 45 46
+    T_SEMICOLON (275) 32 37 39 41 42
+    T_NOT (276)
+    T_AND (277)
+    T_OR (278)
+    T_ATRIBUITION (279) 37 38
+    T_PLUS (280)
+    T_MINUS (281)
+    T_MULTIPLY (282)
+    T_DIVIDE (283)
+    T_EQUALS (284)
+    T_DIFERENT (285)
+    T_LESS (286)
+    T_MORE (287)
+    T_LESS_EQUALS (288)
+    T_MORE_EQUALS (289)
+    T_LITERAL (290) 33 38 40 46 48
+
+
+Nonterminals, with rules where they appear
+
+    $accept (36)
+        on left: 0
+    program (37)
+        on left: 1 2
+        on right: 0
+    functionList (38)
+        on left: 3 4
+        on right: 1 3
+    function (39)
+        on left: 5 6
+        on right: 3 4
+    returnType (40)
+        on left: 7 8
+        on right: 5 6
+    declareParams (41)
+        on left: 9 10
+        on right: 5 9
+    param (42)
+        on left: 11
+        on right: 9 10
+    mainBlock (43)
+        on left: 12 13
+        on right: 1 2 5 6
+    declarations (44)
+        on left: 14 15
+        on right: 12 14
+    declare (45)
+        on left: 16
+        on right: 14 15
+    type (46)
+        on left: 17 18 19
+        on right: 7 11 16
+    idList (47)
+        on left: 20 21
+        on right: 16 20
+    block (48)
+        on left: 22
+        on right: 34 35 36
+    cmdList (49)
+        on left: 23 24
+        on right: 12 13 22 23
+    command (50)
+        on left: 25 26 27 28 29 30 31
+        on right: 23 24
+    return (51)
+        on left: 32 33
+        on right: 31
+    cmdIf (52)
+        on left: 34 35
+        on right: 25
+    cmdWhile (53)
+        on left: 36
+        on right: 26
+    cmdAtribuition (54)
+        on left: 37 38
+        on right: 27
+    cmdPrint (55)
+        on left: 39 40
+        on right: 28
+    cmdRead (56)
+        on left: 41
+        on right: 29
+    procCall (57)
+        on left: 42
+        on right: 30
+    functionCall (58)
+        on left: 43 44
+        on right: 42
+    paramList (59)
+        on left: 45 46 47 48
+        on right: 43 45 46
+    arithmeticExpression (60)
+        on left: 49
+        on right: 32 45 47
+    logicExpression (61)
+        on left: 50
+        on right: 34 35 36 37 39
+
+
+State 0
+
+    0 $accept: . program $end
+
+    T_VOID        shift, and go to state 1
+    T_INTEGER     shift, and go to state 2
+    T_STRING      shift, and go to state 3
+    T_FLOAT       shift, and go to state 4
+    T_OPEN_BRACE  shift, and go to state 5
+
+    program       go to state 6
+    functionList  go to state 7
+    function      go to state 8
+    returnType    go to state 9
+    mainBlock     go to state 10
+    type          go to state 11
+
+
+State 1
+
+    8 returnType: T_VOID .
+
+    $default  reduce using rule 8 (returnType)
+
+
+State 2
+
+   17 type: T_INTEGER .
+
+    $default  reduce using rule 17 (type)
+
+
+State 3
+
+   18 type: T_STRING .
+
+    $default  reduce using rule 18 (type)
+
+
+State 4
+
+   19 type: T_FLOAT .
+
+    $default  reduce using rule 19 (type)
+
+
+State 5
+
+   12 mainBlock: T_OPEN_BRACE . declarations cmdList T_CLOSE_BRACE
+   13          | T_OPEN_BRACE . cmdList T_CLOSE_BRACE
+
+    T_IDENTIFIER  shift, and go to state 12
+    T_RETURN      shift, and go to state 13
+    T_IF          shift, and go to state 14
+    T_WHILE       shift, and go to state 15
+    T_PRINT       shift, and go to state 16
+    T_READ        shift, and go to state 17
+    T_INTEGER     shift, and go to state 2
+    T_STRING      shift, and go to state 3
+    T_FLOAT       shift, and go to state 4
+    T_LITERAL     shift, and go to state 18
+
+    declarations    go to state 19
+    declare         go to state 20
+    type            go to state 21
+    cmdList         go to state 22
+    command         go to state 23
+    return          go to state 24
+    cmdIf           go to state 25
+    cmdWhile        go to state 26
+    cmdAtribuition  go to state 27
+    cmdPrint        go to state 28
+    cmdRead         go to state 29
+    procCall        go to state 30
+    functionCall    go to state 31
+
+
+State 6
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 32
+
+
+State 7
+
+    1 program: functionList . mainBlock
+    3 functionList: functionList . function
+
+    T_VOID        shift, and go to state 1
+    T_INTEGER     shift, and go to state 2
+    T_STRING      shift, and go to state 3
+    T_FLOAT       shift, and go to state 4
+    T_OPEN_BRACE  shift, and go to state 5
+
+    function    go to state 33
+    returnType  go to state 9
+    mainBlock   go to state 34
+    type        go to state 11
+
+
+State 8
+
+    4 functionList: function .
+
+    $default  reduce using rule 4 (functionList)
+
+
+State 9
+
+    5 function: returnType . T_IDENTIFIER T_OPEN_PARENTHESES declareParams T_CLOSE_PARENTHESES mainBlock
+    6         | returnType . T_IDENTIFIER T_OPEN_PARENTHESES T_CLOSE_PARENTHESES mainBlock
+
+    T_IDENTIFIER  shift, and go to state 35
+
+
+State 10
+
+    2 program: mainBlock .
+
+    $default  reduce using rule 2 (program)
+
+
+State 11
+
+    7 returnType: type .
+
+    $default  reduce using rule 7 (returnType)
+
+
+State 12
+
+   37 cmdAtribuition: T_IDENTIFIER . T_ATRIBUITION logicExpression T_SEMICOLON
+   38               | T_IDENTIFIER . T_ATRIBUITION T_LITERAL
+   43 functionCall: T_IDENTIFIER . T_OPEN_PARENTHESES paramList T_CLOSE_PARENTHESES
+   44             | T_IDENTIFIER . T_OPEN_PARENTHESES T_CLOSE_PARENTHESES
+
+    T_OPEN_PARENTHESES  shift, and go to state 36
+    T_ATRIBUITION       shift, and go to state 37
+
+
+State 13
+
+   32 return: T_RETURN . arithmeticExpression T_SEMICOLON
+
+    $default  reduce using rule 49 (arithmeticExpression)
+
+    arithmeticExpression  go to state 38
+
+
+State 14
+
+   34 cmdIf: T_IF . T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
+   35      | T_IF . T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block block
+
+    T_OPEN_PARENTHESES  shift, and go to state 39
+
+
+State 15
+
+   36 cmdWhile: T_WHILE . T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
+
+    T_OPEN_PARENTHESES  shift, and go to state 40
+
+
+State 16
+
+   39 cmdPrint: T_PRINT . T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES T_SEMICOLON
+   40         | T_PRINT . T_OPEN_PARENTHESES T_LITERAL T_CLOSE_PARENTHESES
+
+    T_OPEN_PARENTHESES  shift, and go to state 41
+
+
+State 17
+
+   41 cmdRead: T_READ . T_OPEN_PARENTHESES T_IDENTIFIER T_CLOSE_PARENTHESES T_SEMICOLON
+
+    T_OPEN_PARENTHESES  shift, and go to state 42
+
+
+State 18
+
+   33 return: T_LITERAL .
+
+    $default  reduce using rule 33 (return)
+
+
+State 19
+
+   12 mainBlock: T_OPEN_BRACE declarations . cmdList T_CLOSE_BRACE
+   14 declarations: declarations . declare
+
+    T_IDENTIFIER  shift, and go to state 12
+    T_RETURN      shift, and go to state 13
+    T_IF          shift, and go to state 14
+    T_WHILE       shift, and go to state 15
+    T_PRINT       shift, and go to state 16
+    T_READ        shift, and go to state 17
+    T_INTEGER     shift, and go to state 2
+    T_STRING      shift, and go to state 3
+    T_FLOAT       shift, and go to state 4
+    T_LITERAL     shift, and go to state 18
+
+    declare         go to state 43
+    type            go to state 21
+    cmdList         go to state 44
+    command         go to state 23
+    return          go to state 24
+    cmdIf           go to state 25
+    cmdWhile        go to state 26
+    cmdAtribuition  go to state 27
+    cmdPrint        go to state 28
+    cmdRead         go to state 29
+    procCall        go to state 30
+    functionCall    go to state 31
+
+
+State 20
+
+   15 declarations: declare .
+
+    $default  reduce using rule 15 (declarations)
+
+
+State 21
+
+   16 declare: type . idList
+
+    T_IDENTIFIER  shift, and go to state 45
+
+    idList  go to state 46
+
+
+State 22
+
+   13 mainBlock: T_OPEN_BRACE cmdList . T_CLOSE_BRACE
+   23 cmdList: cmdList . command
+
+    T_IDENTIFIER   shift, and go to state 12
+    T_RETURN       shift, and go to state 13
+    T_IF           shift, and go to state 14
+    T_WHILE        shift, and go to state 15
+    T_PRINT        shift, and go to state 16
+    T_READ         shift, and go to state 17
+    T_CLOSE_BRACE  shift, and go to state 47
+    T_LITERAL      shift, and go to state 18
+
+    command         go to state 48
+    return          go to state 24
+    cmdIf           go to state 25
+    cmdWhile        go to state 26
+    cmdAtribuition  go to state 27
+    cmdPrint        go to state 28
+    cmdRead         go to state 29
+    procCall        go to state 30
+    functionCall    go to state 31
+
+
+State 23
+
+   24 cmdList: command .
+
+    $default  reduce using rule 24 (cmdList)
+
+
+State 24
+
+   31 command: return .
+
+    $default  reduce using rule 31 (command)
+
+
+State 25
+
+   25 command: cmdIf .
+
+    $default  reduce using rule 25 (command)
+
+
+State 26
+
+   26 command: cmdWhile .
+
+    $default  reduce using rule 26 (command)
+
+
+State 27
+
+   27 command: cmdAtribuition .
+
+    $default  reduce using rule 27 (command)
+
+
+State 28
+
+   28 command: cmdPrint .
+
+    $default  reduce using rule 28 (command)
+
+
+State 29
+
+   29 command: cmdRead .
+
+    $default  reduce using rule 29 (command)
+
+
+State 30
+
+   30 command: procCall .
+
+    $default  reduce using rule 30 (command)
+
+
+State 31
+
+   42 procCall: functionCall . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 49
+
+
+State 32
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 33
+
+    3 functionList: functionList function .
+
+    $default  reduce using rule 3 (functionList)
+
+
+State 34
+
+    1 program: functionList mainBlock .
+
+    $default  reduce using rule 1 (program)
+
+
+State 35
+
+    5 function: returnType T_IDENTIFIER . T_OPEN_PARENTHESES declareParams T_CLOSE_PARENTHESES mainBlock
+    6         | returnType T_IDENTIFIER . T_OPEN_PARENTHESES T_CLOSE_PARENTHESES mainBlock
+
+    T_OPEN_PARENTHESES  shift, and go to state 50
+
+
+State 36
+
+   43 functionCall: T_IDENTIFIER T_OPEN_PARENTHESES . paramList T_CLOSE_PARENTHESES
+   44             | T_IDENTIFIER T_OPEN_PARENTHESES . T_CLOSE_PARENTHESES
+
+    T_CLOSE_PARENTHESES  shift, and go to state 51
+    T_LITERAL            shift, and go to state 52
+
+    T_CLOSE_PARENTHESES  [reduce using rule 49 (arithmeticExpression)]
+    $default             reduce using rule 49 (arithmeticExpression)
+
+    paramList             go to state 53
+    arithmeticExpression  go to state 54
+
+
+State 37
+
+   37 cmdAtribuition: T_IDENTIFIER T_ATRIBUITION . logicExpression T_SEMICOLON
+   38               | T_IDENTIFIER T_ATRIBUITION . T_LITERAL
+
+    T_LITERAL  shift, and go to state 55
+
+    $default  reduce using rule 50 (logicExpression)
+
+    logicExpression  go to state 56
+
+
+State 38
+
+   32 return: T_RETURN arithmeticExpression . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 57
+
+
+State 39
+
+   34 cmdIf: T_IF T_OPEN_PARENTHESES . logicExpression T_CLOSE_PARENTHESES block
+   35      | T_IF T_OPEN_PARENTHESES . logicExpression T_CLOSE_PARENTHESES block block
+
+    $default  reduce using rule 50 (logicExpression)
+
+    logicExpression  go to state 58
+
+
+State 40
+
+   36 cmdWhile: T_WHILE T_OPEN_PARENTHESES . logicExpression T_CLOSE_PARENTHESES block
+
+    $default  reduce using rule 50 (logicExpression)
+
+    logicExpression  go to state 59
+
+
+State 41
+
+   39 cmdPrint: T_PRINT T_OPEN_PARENTHESES . logicExpression T_CLOSE_PARENTHESES T_SEMICOLON
+   40         | T_PRINT T_OPEN_PARENTHESES . T_LITERAL T_CLOSE_PARENTHESES
+
+    T_LITERAL  shift, and go to state 60
+
+    $default  reduce using rule 50 (logicExpression)
+
+    logicExpression  go to state 61
+
+
+State 42
+
+   41 cmdRead: T_READ T_OPEN_PARENTHESES . T_IDENTIFIER T_CLOSE_PARENTHESES T_SEMICOLON
+
+    T_IDENTIFIER  shift, and go to state 62
+
+
+State 43
+
+   14 declarations: declarations declare .
+
+    $default  reduce using rule 14 (declarations)
+
+
+State 44
+
+   12 mainBlock: T_OPEN_BRACE declarations cmdList . T_CLOSE_BRACE
+   23 cmdList: cmdList . command
+
+    T_IDENTIFIER   shift, and go to state 12
+    T_RETURN       shift, and go to state 13
+    T_IF           shift, and go to state 14
+    T_WHILE        shift, and go to state 15
+    T_PRINT        shift, and go to state 16
+    T_READ         shift, and go to state 17
+    T_CLOSE_BRACE  shift, and go to state 63
+    T_LITERAL      shift, and go to state 18
+
+    command         go to state 48
+    return          go to state 24
+    cmdIf           go to state 25
+    cmdWhile        go to state 26
+    cmdAtribuition  go to state 27
+    cmdPrint        go to state 28
+    cmdRead         go to state 29
+    procCall        go to state 30
+    functionCall    go to state 31
+
+
+State 45
+
+   21 idList: T_IDENTIFIER .
+
+    $default  reduce using rule 21 (idList)
+
+
+State 46
+
+   16 declare: type idList .
+   20 idList: idList . T_COMMA T_IDENTIFIER
+
+    T_COMMA  shift, and go to state 64
+
+    $default  reduce using rule 16 (declare)
+
+
+State 47
+
+   13 mainBlock: T_OPEN_BRACE cmdList T_CLOSE_BRACE .
+
+    $default  reduce using rule 13 (mainBlock)
+
+
+State 48
+
+   23 cmdList: cmdList command .
+
+    $default  reduce using rule 23 (cmdList)
+
+
+State 49
+
+   42 procCall: functionCall T_SEMICOLON .
+
+    $default  reduce using rule 42 (procCall)
+
+
+State 50
+
+    5 function: returnType T_IDENTIFIER T_OPEN_PARENTHESES . declareParams T_CLOSE_PARENTHESES mainBlock
+    6         | returnType T_IDENTIFIER T_OPEN_PARENTHESES . T_CLOSE_PARENTHESES mainBlock
+
+    T_INTEGER            shift, and go to state 2
+    T_STRING             shift, and go to state 3
+    T_FLOAT              shift, and go to state 4
+    T_CLOSE_PARENTHESES  shift, and go to state 65
+
+    declareParams  go to state 66
+    param          go to state 67
+    type           go to state 68
+
+
+State 51
+
+   44 functionCall: T_IDENTIFIER T_OPEN_PARENTHESES T_CLOSE_PARENTHESES .
+
+    $default  reduce using rule 44 (functionCall)
+
+
+State 52
+
+   48 paramList: T_LITERAL .
+
+    $default  reduce using rule 48 (paramList)
+
+
+State 53
+
+   43 functionCall: T_IDENTIFIER T_OPEN_PARENTHESES paramList . T_CLOSE_PARENTHESES
+   45 paramList: paramList . T_COMMA arithmeticExpression
+   46          | paramList . T_COMMA T_LITERAL
+
+    T_CLOSE_PARENTHESES  shift, and go to state 69
+    T_COMMA              shift, and go to state 70
+
+
+State 54
+
+   47 paramList: arithmeticExpression .
+
+    $default  reduce using rule 47 (paramList)
+
+
+State 55
+
+   38 cmdAtribuition: T_IDENTIFIER T_ATRIBUITION T_LITERAL .
+
+    $default  reduce using rule 38 (cmdAtribuition)
+
+
+State 56
+
+   37 cmdAtribuition: T_IDENTIFIER T_ATRIBUITION logicExpression . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 71
+
+
+State 57
+
+   32 return: T_RETURN arithmeticExpression T_SEMICOLON .
+
+    $default  reduce using rule 32 (return)
+
+
+State 58
+
+   34 cmdIf: T_IF T_OPEN_PARENTHESES logicExpression . T_CLOSE_PARENTHESES block
+   35      | T_IF T_OPEN_PARENTHESES logicExpression . T_CLOSE_PARENTHESES block block
+
+    T_CLOSE_PARENTHESES  shift, and go to state 72
+
+
+State 59
+
+   36 cmdWhile: T_WHILE T_OPEN_PARENTHESES logicExpression . T_CLOSE_PARENTHESES block
+
+    T_CLOSE_PARENTHESES  shift, and go to state 73
+
+
+State 60
+
+   40 cmdPrint: T_PRINT T_OPEN_PARENTHESES T_LITERAL . T_CLOSE_PARENTHESES
+
+    T_CLOSE_PARENTHESES  shift, and go to state 74
+
+
+State 61
+
+   39 cmdPrint: T_PRINT T_OPEN_PARENTHESES logicExpression . T_CLOSE_PARENTHESES T_SEMICOLON
+
+    T_CLOSE_PARENTHESES  shift, and go to state 75
+
+
+State 62
+
+   41 cmdRead: T_READ T_OPEN_PARENTHESES T_IDENTIFIER . T_CLOSE_PARENTHESES T_SEMICOLON
+
+    T_CLOSE_PARENTHESES  shift, and go to state 76
+
+
+State 63
+
+   12 mainBlock: T_OPEN_BRACE declarations cmdList T_CLOSE_BRACE .
+
+    $default  reduce using rule 12 (mainBlock)
+
+
+State 64
+
+   20 idList: idList T_COMMA . T_IDENTIFIER
+
+    T_IDENTIFIER  shift, and go to state 77
+
+
+State 65
+
+    6 function: returnType T_IDENTIFIER T_OPEN_PARENTHESES T_CLOSE_PARENTHESES . mainBlock
+
+    T_OPEN_BRACE  shift, and go to state 5
+
+    mainBlock  go to state 78
+
+
+State 66
+
+    5 function: returnType T_IDENTIFIER T_OPEN_PARENTHESES declareParams . T_CLOSE_PARENTHESES mainBlock
+    9 declareParams: declareParams . T_COMMA param
+
+    T_CLOSE_PARENTHESES  shift, and go to state 79
+    T_COMMA              shift, and go to state 80
+
+
+State 67
+
+   10 declareParams: param .
+
+    $default  reduce using rule 10 (declareParams)
+
+
+State 68
+
+   11 param: type . T_IDENTIFIER
+
+    T_IDENTIFIER  shift, and go to state 81
+
+
+State 69
+
+   43 functionCall: T_IDENTIFIER T_OPEN_PARENTHESES paramList T_CLOSE_PARENTHESES .
+
+    $default  reduce using rule 43 (functionCall)
+
+
+State 70
+
+   45 paramList: paramList T_COMMA . arithmeticExpression
+   46          | paramList T_COMMA . T_LITERAL
+
+    T_LITERAL  shift, and go to state 82
+
+    $default  reduce using rule 49 (arithmeticExpression)
+
+    arithmeticExpression  go to state 83
+
+
+State 71
+
+   37 cmdAtribuition: T_IDENTIFIER T_ATRIBUITION logicExpression T_SEMICOLON .
+
+    $default  reduce using rule 37 (cmdAtribuition)
+
+
+State 72
+
+   34 cmdIf: T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES . block
+   35      | T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES . block block
+
+    T_OPEN_BRACE  shift, and go to state 84
+
+    block  go to state 85
+
+
+State 73
+
+   36 cmdWhile: T_WHILE T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES . block
+
+    T_OPEN_BRACE  shift, and go to state 84
+
+    block  go to state 86
+
+
+State 74
+
+   40 cmdPrint: T_PRINT T_OPEN_PARENTHESES T_LITERAL T_CLOSE_PARENTHESES .
+
+    $default  reduce using rule 40 (cmdPrint)
+
+
+State 75
+
+   39 cmdPrint: T_PRINT T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 87
+
+
+State 76
+
+   41 cmdRead: T_READ T_OPEN_PARENTHESES T_IDENTIFIER T_CLOSE_PARENTHESES . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 88
+
+
+State 77
+
+   20 idList: idList T_COMMA T_IDENTIFIER .
+
+    $default  reduce using rule 20 (idList)
+
+
+State 78
+
+    6 function: returnType T_IDENTIFIER T_OPEN_PARENTHESES T_CLOSE_PARENTHESES mainBlock .
+
+    $default  reduce using rule 6 (function)
+
+
+State 79
+
+    5 function: returnType T_IDENTIFIER T_OPEN_PARENTHESES declareParams T_CLOSE_PARENTHESES . mainBlock
+
+    T_OPEN_BRACE  shift, and go to state 5
+
+    mainBlock  go to state 89
+
+
+State 80
+
+    9 declareParams: declareParams T_COMMA . param
+
+    T_INTEGER  shift, and go to state 2
+    T_STRING   shift, and go to state 3
+    T_FLOAT    shift, and go to state 4
+
+    param  go to state 90
+    type   go to state 68
+
+
+State 81
+
+   11 param: type T_IDENTIFIER .
+
+    $default  reduce using rule 11 (param)
+
+
+State 82
+
+   46 paramList: paramList T_COMMA T_LITERAL .
+
+    $default  reduce using rule 46 (paramList)
+
+
+State 83
+
+   45 paramList: paramList T_COMMA arithmeticExpression .
+
+    $default  reduce using rule 45 (paramList)
+
+
+State 84
+
+   22 block: T_OPEN_BRACE . cmdList T_CLOSE_BRACE
+
+    T_IDENTIFIER  shift, and go to state 12
+    T_RETURN      shift, and go to state 13
+    T_IF          shift, and go to state 14
+    T_WHILE       shift, and go to state 15
+    T_PRINT       shift, and go to state 16
+    T_READ        shift, and go to state 17
+    T_LITERAL     shift, and go to state 18
+
+    cmdList         go to state 91
+    command         go to state 23
+    return          go to state 24
+    cmdIf           go to state 25
+    cmdWhile        go to state 26
+    cmdAtribuition  go to state 27
+    cmdPrint        go to state 28
+    cmdRead         go to state 29
+    procCall        go to state 30
+    functionCall    go to state 31
+
+
+State 85
+
+   34 cmdIf: T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block .
+   35      | T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block . block
+
+    T_OPEN_BRACE  shift, and go to state 84
+
+    $default  reduce using rule 34 (cmdIf)
+
+    block  go to state 92
+
+
+State 86
+
+   36 cmdWhile: T_WHILE T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block .
+
+    $default  reduce using rule 36 (cmdWhile)
+
+
+State 87
+
+   39 cmdPrint: T_PRINT T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES T_SEMICOLON .
+
+    $default  reduce using rule 39 (cmdPrint)
+
+
+State 88
+
+   41 cmdRead: T_READ T_OPEN_PARENTHESES T_IDENTIFIER T_CLOSE_PARENTHESES T_SEMICOLON .
+
+    $default  reduce using rule 41 (cmdRead)
+
+
+State 89
+
+    5 function: returnType T_IDENTIFIER T_OPEN_PARENTHESES declareParams T_CLOSE_PARENTHESES mainBlock .
+
+    $default  reduce using rule 5 (function)
+
+
+State 90
+
+    9 declareParams: declareParams T_COMMA param .
+
+    $default  reduce using rule 9 (declareParams)
+
+
+State 91
+
+   22 block: T_OPEN_BRACE cmdList . T_CLOSE_BRACE
+   23 cmdList: cmdList . command
+
+    T_IDENTIFIER   shift, and go to state 12
+    T_RETURN       shift, and go to state 13
+    T_IF           shift, and go to state 14
+    T_WHILE        shift, and go to state 15
+    T_PRINT        shift, and go to state 16
+    T_READ         shift, and go to state 17
+    T_CLOSE_BRACE  shift, and go to state 93
+    T_LITERAL      shift, and go to state 18
+
+    command         go to state 48
+    return          go to state 24
+    cmdIf           go to state 25
+    cmdWhile        go to state 26
+    cmdAtribuition  go to state 27
+    cmdPrint        go to state 28
+    cmdRead         go to state 29
+    procCall        go to state 30
+    functionCall    go to state 31
+
+
+State 92
+
+   35 cmdIf: T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block block .
+
+    $default  reduce using rule 35 (cmdIf)
+
+
+State 93
+
+   22 block: T_OPEN_BRACE cmdList T_CLOSE_BRACE .
+
+    $default  reduce using rule 22 (block)
