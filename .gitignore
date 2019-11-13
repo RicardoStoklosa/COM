@@ -1,3 +1,5 @@
 analizador
 *.tab.*
 lex.yy.c
+.ccls-cache
+lang.output

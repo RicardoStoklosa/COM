@@ -1,0 +1,6 @@
+{
+    int a,b;
+    string c,d;
+    a=1;
+    return;
+}

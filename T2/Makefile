@@ -10,4 +10,4 @@ lang: lex.yy.c lang.tab.c lang.tab.h
 	g++ -o analizador lang.tab.c lex.yy.c
 
 clean:
-	rm analizador lang.tab.c lex.yy.c lang.tab.h
+	rm lang.output lang.tab.c lex.yy.c lang.tab.h

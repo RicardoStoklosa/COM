@@ -9,6 +9,16 @@ void extern yyerror(char*);
 void TokenInvalido();
 int yycolumn = 1;
 
+char* removeQuotes(char* literal){
+    char* newLiteral = (char*)malloc(sizeof(literal)-(2*sizeof(char)));
+    int i;
+    for(i=1;literal[i]!='"';i++){
+        newLiteral[i-1]=literal[i];
+    }
+    newLiteral[i]='\0';
+    return newLiteral;
+}
+
 #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
     yylloc.first_column = yycolumn; yylloc.last_column = yycolumn + yyleng - 1; \
     yycolumn += yyleng; \
@@ -38,6 +48,7 @@ int yycolumn = 1;
 
 ","                         {return T_COMMA;}
 ";"                         {return T_SEMICOLON;}
+\"                          {return T_DOBLE_QUOTES;}
 
 "!"                         {return T_NOT;}
 "&&"                        {return T_AND;}
@@ -57,12 +68,14 @@ int yycolumn = 1;
 ">="                        {return T_MORE_EQUALS;}
 
 
-[A-Za-z_][A-Za-z0-9_]*      {yylval.indentifier = strdup(yytext); return T_IDENTIFIER;}
-\.?[0-9]+|[0-9]+\.[0-9]+    {yylval.number = atof(yytext); return T_NUMBER;}
+[A-Za-z_][A-Za-z0-9_]*      {/*yylval.indentifier = strdup(yytext);*/ return T_IDENTIFIER;}
+[0-9]+    {yylval.integer = atoi(yytext); return T_NUMBER;}
 
-[ \t] ;
+\"[^\"]*\"                           {yylval.literal = removeQuotes(strdup(yytext)); return T_LITERAL;}
+[ \t]
 \n                          {yycolumn = 1;}
-.                           {return T_LITERAL/*TokenInvalido()*/;}
+.
+
 
 %%
 

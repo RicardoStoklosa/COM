@@ -2,10 +2,18 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+    #include "symtable.c"
+    #define INT 0
+    #define FLOAT 1
+    #define STRING 2
     extern int yylex();
     extern int yyparse();
     extern FILE* yyin;
     void yyerror(const char* s);
+    void yyerrorExpected(const char* recived, char* expected);
+    int tmp=-1;
+
+
 
 %}
 %define parse.error verbose
@@ -14,11 +22,15 @@
 %union {
     char* str;
     char* indentifier;
-    float number;
+    int integer;
+    char* literal;
 }
 
 %token<indentifier>    T_IDENTIFIER
-%token<number>          T_NUMBER
+%token<integer>          T_NUMBER
+%token<literal>          T_LITERAL
+%type<integer> type arithmeticExpression
+%type<str> idList
 %start program
 %token
     T_RETURN
@@ -51,13 +63,13 @@
     T_MORE
     T_LESS_EQUALS
     T_MORE_EQUALS
-    T_LITERAL
+    T_DOBLE_QUOTES
 
 %%
 
 program:functionList mainBlock
-         |mainBlock
-         ;
+       |mainBlock
+       ;
 
 functionList:functionList function
             |function
@@ -86,16 +98,16 @@ declarations:declarations declare
             |declare
             ;
 
-declare:type idList
+declare:type idList T_SEMICOLON {tmp=-1;}
        ;
 
-type:T_INTEGER
-    |T_STRING
-    |T_FLOAT
+type:T_INTEGER {tmp=INT;}
+    |T_STRING {tmp=STRING;}
+    |T_FLOAT {tmp=FLOAT;}
     ;
 
-idList:idList T_COMMA T_IDENTIFIER
-      |T_IDENTIFIER
+idList:idList T_COMMA T_IDENTIFIER {putSym($3,tmp);}
+      |T_IDENTIFIER {putSym($1,tmp);}
       ;
 
 block:T_OPEN_BRACE cmdList T_CLOSE_BRACE
@@ -124,8 +136,8 @@ cmdIf:T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
 cmdWhile:T_WHILE T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
         ;
 
-cmdAtribuition:T_IDENTIFIER T_ATRIBUITION logicExpression T_SEMICOLON
-              |T_IDENTIFIER T_ATRIBUITION T_LITERAL
+cmdAtribuition:T_IDENTIFIER T_ATRIBUITION arithmeticExpression T_SEMICOLON {setValueInt($1,$3);}
+              |T_IDENTIFIER T_ATRIBUITION T_LITERAL T_SEMICOLON {printf("%s\n",$3);setValueString($1,$3);}
               ;
 
 cmdPrint:T_PRINT T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES T_SEMICOLON
@@ -149,6 +161,7 @@ paramList:paramList T_COMMA arithmeticExpression
          ;
 
 arithmeticExpression:
+                    |T_NUMBER {$$=$1;}
                     ;
 
 logicExpression:
@@ -156,14 +169,20 @@ logicExpression:
 
 %%
 
-int main() {
-	yyin = stdin;
+int main(int argc,char* argv[]) {
+    argc--;argv++;
+    if ( argc > 0 )
+        yyin = fopen( argv[0], "r" );
+    else
+        yyin = stdin;
 
-	do {
-		yyparse();
-	} while(!feof(yyin));
+    do {
+        yyparse();
+    } while(!feof(yyin));
+    printf("Nenhum erro encontrado\n");
+    showSymTable();
 
-	return 0;
+return 0;
 }
 
 void yyerror(const char* s) {
@@ -174,3 +193,9 @@ void yyerror(const char* s) {
     fprintf(stderr, "%s\n",s);
     exit(1);
 }
+void yyerrorExpected(const char* recived, char* expected) {
+    fprintf(stderr, "ERRO EM [%d:%d]: \n",yylloc.first_line, yylloc.first_column);
+    fprintf(stderr, "Esperava %s recebeu %s\n",expected,recived);
+    exit(1);
+}
+
