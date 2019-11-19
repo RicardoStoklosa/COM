@@ -4,15 +4,11 @@
 #define INT 0
 #define FLOAT 1
 #define STRING 2
+#define VAR 3
 
 struct symrec{
     char *name;
     int type;
-    union{
-        int intValue;
-        float floatValue;
-        char *charValue;
-    };
     struct symrec *next;
 };
 
@@ -21,9 +17,6 @@ typedef struct symrec symrec;
 symrec *sym_table = (symrec *)0;
 symrec *putSym(char* nome, int type);
 symrec *getSym(char* nome);
-void setValueInt(char* nome, int value);
-void setValueFloat(char* nome, float value);
-void setValueString(char* nome, char* value);
 char* getType(int type);
 void showSymTable();
 int areadyExists(char* nome);
@@ -39,17 +32,6 @@ symrec* putSym(char *sym_name, int type){
     ptr->name=(char*)malloc(strlen(sym_name)+1);
     strcpy(ptr->name,sym_name);
     ptr->type = type;
-    if( type==INT ){
-        ptr->intValue = 0;
-    }
-    else if( type==FLOAT ){
-        ptr->floatValue = 0.0f;
-    }
-    else if( type==STRING ){
-        ptr->charValue=(char*)malloc(3*sizeof(char));
-        strcpy(ptr->charValue,"oi");
-    }
-
     ptr->next=(struct symrec*)sym_table;
     sym_table=ptr;
     return ptr;
@@ -67,57 +49,9 @@ void showSymTable(){
     printf("\ntabela de simbolos\n");
     printf("==================\n");
     for( ptr=sym_table; ptr!=(symrec*)0; ptr=(symrec*)ptr->next ){
-        printf("{%s:%s}=",ptr->name,getType(ptr->type));
-        if(ptr->type == INT)
-            printf("%d\n",ptr->intValue);
-        else if(ptr->type == FLOAT)
-            printf("%f\n",ptr->floatValue);
-        else if(ptr->type == STRING)
-            printf("%s\n",ptr->charValue);
+        printf("{%s:%s}\n",ptr->name,getType(ptr->type));
     }
     printf("\n==================\n");
-}
-
-void setValueInt(char* nome, int value){
-    symrec* ptr = getSym(nome);
-    if( ptr==0 ){
-        printf("A variavel %s nao exixte ", nome);
-        exit(1);
-    }
-    if( ptr->type!=INT ){
-        fprintf(stderr, "Esperava \"int\" recebeu \"%s\"\n",getType(ptr->type));
-        exit(1);
-        /*yyerrorExpected("inteiro",getType(ptr->type));*/
-        return;
-    }
-    ptr->intValue = value;
-}
-void setValueFloat(char* nome, float value){
-    symrec* ptr = getSym(nome);
-    if( ptr==0 ){
-        printf("A variavel %s nao exixte ", nome);
-        exit(1);
-    }
-    if( ptr->type!=FLOAT ){
-        fprintf(stderr, "Esperava \"float\" recebeu \"%s\"\n",getType(ptr->type));
-        exit(1);
-        /*yyerrorExpected("float",getType(ptr->type));*/
-    }
-    ptr->floatValue = value;
-}
-
-void setValueString(char* nome, char* value){
-    symrec* ptr = getSym(nome);
-    if( ptr==0 ){
-        printf("A variavel %s nao exixte ", nome);
-        exit(1);
-    }
-    if( ptr->type!=STRING ){
-        fprintf(stderr, "Esperava \"string\" recebeu \"%s\"\n",getType(ptr->type));
-        exit(1);
-        /*yyerrorExpected("string",getType(ptr->type));*/
-    }
-    strcpy(ptr->charValue,value);
 }
 
 char* getType(int type){

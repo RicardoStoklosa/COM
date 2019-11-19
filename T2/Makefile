@@ -1,4 +1,4 @@
-all: lang
+all: jasmin
 
 lang.tab.c lang.tab.h:	lang.y
 	bison -d -v lang.y
@@ -9,5 +9,13 @@ lex.yy.c: lang.lex lang.tab.h
 lang: lex.yy.c lang.tab.c lang.tab.h
 	g++ -o analizador lang.tab.c lex.yy.c
 
+jasmin: analizador
+	java -jar jasmin.jar output.jout
+	java output
+
+analizador: lang
+	./analizador entrada
+
 clean:
 	rm lang.output lang.tab.c lex.yy.c lang.tab.h
+	clear

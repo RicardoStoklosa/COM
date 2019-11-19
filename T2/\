@@ -14,6 +14,8 @@
     void yyerrorExpected(const char* recived, char* expected);
     int tmp=-1;
 
+
+
 %}
 %define parse.error verbose
 %locations
@@ -22,14 +24,13 @@
     char* str;
     char* indentifier;
     int integer;
-    float floatValue;
     char* literal;
 }
 
-%token<indentifier>     T_IDENTIFIER
-%token<integer>         T_INTEGER_VALUE T_FLOAT_VALUE
-%token<literal>         T_LITERAL
-%type<integer> type operators arithmeticExpression cmdPrint
+%token<indentifier>    T_IDENTIFIER
+%token<integer>          T_NUMBER
+%token<literal>          T_LITERAL
+%type<integer> type arithmeticExpression
 %type<str> idList
 %start program
 %token
@@ -67,8 +68,8 @@
 
 %%
 
-program:functionList mainBlock
-       |mainBlock
+program:functionList mainBlock {mainEnd();}
+       |mainBlock {mainEnd();}
        ;
 
 functionList:functionList function
@@ -90,8 +91,8 @@ declareParams:declareParams T_COMMA param
 param:type T_IDENTIFIER
      ;
 
-mainBlock:T_OPEN_BRACE {mainInit();} declarations cmdList T_CLOSE_BRACE {mainEnd();}
-         |T_OPEN_BRACE {mainInit();} cmdList T_CLOSE_BRACE {mainEnd();}
+mainBlock:T_OPEN_BRACE {mainInit();} declarations cmdList T_CLOSE_BRACE
+         |T_OPEN_BRACE cmdList T_CLOSE_BRACE {mainInit();}
          ;
 
 declarations:declarations declare
@@ -127,9 +128,7 @@ command:cmdIf
        ;
 
 return:T_RETURN arithmeticExpression T_SEMICOLON {output.push_back("\treturn");}
-      |T_RETURN T_LITERAL T_SEMICOLON {output.push_back("\treturn");}
-      |T_RETURN T_SEMICOLON {output.push_back("\treturn");}
-      ;
+      |T_LITERAL;
 
 cmdIf:T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
      |T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block T_ELSE block
@@ -142,8 +141,8 @@ cmdAtribuition:T_IDENTIFIER T_ATRIBUITION arithmeticExpression T_SEMICOLON
               |T_IDENTIFIER T_ATRIBUITION T_LITERAL T_SEMICOLON
               ;
 
-cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printEnd($4);}
-        |T_PRINT T_OPEN_PARENTHESES {printInit();} T_LITERAL T_CLOSE_PARENTHESES T_SEMICOLON {printEnd(STRING);}
+cmdPrint:T_PRINT T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES T_SEMICOLON {/*print($3);  IMPLEMENTAR LOGIC*/}
+        |T_PRINT T_OPEN_PARENTHESES T_LITERAL T_CLOSE_PARENTHESES T_SEMICOLON {print($3);}
         ;
 
 cmdRead:T_READ T_OPEN_PARENTHESES T_IDENTIFIER T_CLOSE_PARENTHESES T_SEMICOLON
@@ -162,18 +161,8 @@ paramList:paramList T_COMMA arithmeticExpression
          |T_LITERAL
          ;
 
-arithmeticExpression:T_INTEGER_VALUE {output.push_back("\tldc "+to_string($1)); $$=0;}
-                    |T_FLOAT_VALUE {output.push_back("\tldc "+to_string($1)); $$=1;}
-                    |arithmeticExpression T_PLUS arithmeticExpression {
-                                                                        if($1==1 || $3==1){
-                                                                          output.push_back("\tfadd");
-                                                                          $$=1;
-                                                                        }
-                                                                        else{
-                                                                          output.push_back("\tiadd");
-                                                                          $$=0;
-                                                                        }
-                                                                      }
+arithmeticExpression:
+                    |T_NUMBER {$$=$1;}
                     ;
 
 logicExpression:

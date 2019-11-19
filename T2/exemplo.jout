@@ -1,0 +1,60 @@
+.class public example2
+.super java/lang/Object
+
+.method public <init>()V
+	aload_0
+
+	invokenonvirtual java/lang/Object/<init>()V
+	return
+.end method
+
+.method public static max(II)I
+	.limit stack 2
+	.limit locals 2
+	iload 0
+	iload 1
+	if_icmpgt l1
+	goto l2
+l1:
+	iload 0
+	ireturn
+l2:
+	iload 1
+	ireturn
+	return
+.end method
+
+.method public static main([Ljava/lang/String;)V
+	.limit stack 3
+	.limit locals 4
+        getstatic java/lang/System/out Ljava/io/PrintStream;
+        ldc "Digite o valor de a:"
+        invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+        new java/util/Scanner
+        dup
+	getstatic java/lang/System/in Ljava/io/InputStream;
+	invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V
+	invokevirtual java/util/Scanner/nextInt()I
+	istore 1
+	getstatic java/lang/System/out Ljava/io/PrintStream;
+	ldc "Digite o valor de b:"
+	invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+	new java/util/Scanner
+	dup
+	getstatic java/lang/System/in Ljava/io/InputStream;
+	invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V
+	invokevirtual java/util/Scanner/nextInt()I
+	istore 2
+	getstatic java/lang/System/out Ljava/io/PrintStream;
+	ldc "Resultado:"
+	invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+	iload 1
+	iload 2
+	invokestatic example2/max(II)I
+	istore 3
+	getstatic java/lang/System/out Ljava/io/PrintStream;
+	iload 3
+	invokevirtual java/io/PrintStream/println(I)V
+	return
+.end method
+

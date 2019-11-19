@@ -69,9 +69,10 @@ char* removeQuotes(char* literal){
 
 
 [A-Za-z_][A-Za-z0-9_]*      {/*yylval.indentifier = strdup(yytext);*/ return T_IDENTIFIER;}
-[0-9]+    {yylval.integer = atoi(yytext); return T_NUMBER;}
+[0-9]+                      {yylval.integer = atoi(yytext); return T_INTEGER_VALUE;}
+[0-9]+\.[0-9]+              {yylval.floatValue = atof(yytext); return T_FLOAT_VALUE;}
 
-\"[^\"]*\"                           {yylval.literal = removeQuotes(strdup(yytext)); return T_LITERAL;}
+\"[^\"]*\"                  {yylval.literal = removeQuotes(strdup(yytext)); return T_LITERAL;}
 [ \t]
 \n                          {yycolumn = 1;}
 .
