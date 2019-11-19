@@ -3,3 +3,5 @@ analizador
 lex.yy.c
 .ccls-cache
 lang.output
+analizador
+output.*

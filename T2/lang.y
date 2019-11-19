@@ -24,12 +24,23 @@
     int integer;
     float floatValue;
     char* literal;
+    struct {
+        int type;
+        union{
+            int intValue;
+            float floatValue;
+        };
+        bool isResult;
+    } value;
 }
 
 %token<indentifier>     T_IDENTIFIER
-%token<integer>         T_INTEGER_VALUE T_FLOAT_VALUE
+%token<integer>         T_INTEGER_VALUE
+%token<floatValue>      T_FLOAT_VALUE
 %token<literal>         T_LITERAL
-%type<integer> type operators arithmeticExpression cmdPrint
+%type<integer> type cmdPrint
+%type<str> operator
+%type<value> arithmeticExpression
 %type<str> idList
 %start program
 %token
@@ -142,7 +153,7 @@ cmdAtribuition:T_IDENTIFIER T_ATRIBUITION arithmeticExpression T_SEMICOLON
               |T_IDENTIFIER T_ATRIBUITION T_LITERAL T_SEMICOLON
               ;
 
-cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printEnd($4);}
+cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printEnd($4.type);}
         |T_PRINT T_OPEN_PARENTHESES {printInit();} T_LITERAL T_CLOSE_PARENTHESES T_SEMICOLON {printEnd(STRING);}
         ;
 
@@ -162,19 +173,50 @@ paramList:paramList T_COMMA arithmeticExpression
          |T_LITERAL
          ;
 
-arithmeticExpression:T_INTEGER_VALUE {output.push_back("\tldc "+to_string($1)); $$=0;}
-                    |T_FLOAT_VALUE {output.push_back("\tldc "+to_string($1)); $$=1;}
-                    |arithmeticExpression T_PLUS arithmeticExpression {
-                                                                        if($1==1 || $3==1){
-                                                                          output.push_back("\tfadd");
-                                                                          $$=1;
-                                                                        }
-                                                                        else{
-                                                                          output.push_back("\tiadd");
-                                                                          $$=0;
-                                                                        }
-                                                                      }
+arithmeticExpression:T_INTEGER_VALUE {$$.type=0; $$.intValue=$1; $$.isResult=false;}
+                    |T_FLOAT_VALUE {$$.type=1; $$.floatValue=$1; $$.isResult=false;}
+                    |arithmeticExpression operator arithmeticExpression
+                    {
+                         string aux;
+                         cout<<"RE="<<$1.isResult<<endl;
+                         if($1.type==FLOAT || $3.type==FLOAT){
+                            aux="\tf";
+                            $$.type=FLOAT;
+                            if(!$1.isResult){
+                              if($1.type==INT)
+                                output.push_back("\tldc "+to_string((float)$1.intValue));
+                              else
+                                output.push_back("\tldc "+to_string($1.floatValue));
+                            }
+                            if(!$3.isResult){
+                              if($3.type==INT)
+                                output.push_back("\tldc "+to_string((float)$3.intValue));
+                              else
+                                output.push_back("\tldc "+to_string($3.floatValue));
+                            }
+
+                         }
+                         else{
+                           $$.type=INT;
+                           aux="\ti";
+
+                           if(!$1.isResult){
+                             output.push_back("\tldc "+to_string($1.intValue));
+                           }
+                           if(!$3.isResult){
+                             output.push_back("\tldc "+to_string($3.intValue));
+                           }
+                         }
+                         $$.isResult=true;
+                         aux.append($2);
+                         output.push_back(aux);
+                    }
                     ;
+operator:T_PLUS {strcpy($$,"add");}
+        |T_MINUS {strcpy($$,"neg");}
+        |T_MULTIPLY {strcpy($$,"mul");}
+        |T_DIVIDE {strcpy($$,"div");}
+        ;
 
 logicExpression:
                ;
