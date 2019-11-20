@@ -2,7 +2,7 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
-    #include "symtable.c"
+    #include "symtable.cpp"
     #include "jasminGen.cpp"
     #define INT 0
     #define FLOAT 1
@@ -13,6 +13,7 @@
     void yyerror(const char* s);
     void yyerrorExpected(const char* recived, char* expected);
     int tmp=-1;
+    
 
 %}
 %define parse.error verbose
@@ -75,7 +76,7 @@
 %%
 
 program:functionList mainBlock
-       |mainBlock
+       |mainBlock {symtable.fir1s.push_back({"test"});cout<<symtable.size()<<endl;}
        ;
 
 functionList:functionList function
@@ -113,8 +114,8 @@ type:T_INTEGER {tmp=INT;}
     |T_FLOAT {tmp=FLOAT;}
     ;
 
-idList:idList T_COMMA T_IDENTIFIER {putSym($3,tmp);}
-      |T_IDENTIFIER {putSym($1,tmp);}
+idList:idList T_COMMA T_IDENTIFIER {}
+      |T_IDENTIFIER {}
       ;
 
 block:T_OPEN_BRACE cmdList T_CLOSE_BRACE
@@ -196,10 +197,10 @@ int main(int argc,char* argv[]) {
         yyparse();
     } while(!feof(yyin));
     printf("Nenhum erro encontrado\n");
-    showSymTable();
+    /*showSymTable();
     for(string str:output){
         cout<<str<<endl;
-    }
+    }*/
     writeFile();
 
 return 0;

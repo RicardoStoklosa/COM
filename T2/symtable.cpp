@@ -9,36 +9,44 @@
 
 using namespace std;
 
+struct var{
+    string name;
+    int type;
+    int local;
+};
 struct func{
     string name;
-    vector<int> atrr;
-
+    vector<var> variables;
 };
+vector<pair<int,vector<var>>>symtable;
 
-typedef struct symrec symrec;
-symrec *sym_table = (symrec *)0;
-symrec *putSym(char* nome, int type);
+//void putSym(string nome, int type);
+//void putFunc(string nome);
+/*
 symrec *getSym(char* nome);
 char* getType(int type);
 void showSymTable();
 int areadyExists(char* nome);
-
-symrec* putSym(char *sym_name, int type){
-    if( areadyExists(sym_name) ){
+*/
+//void putSym(string symName, int type, string funcName){
+   /* if( areadyExists(sym_name) ){
         printf("A variavel \"%s\" ja existe\n",sym_name);
         exit(1);
     }
-
-    symrec*ptr;
-    ptr = (symrec*)malloc(sizeof(symrec));
-    ptr->name=(char*)malloc(strlen(sym_name)+1);
-    strcpy(ptr->name,sym_name);
-    ptr->type = type;
-    ptr->next=(struct symrec*)sym_table;
-    sym_table=ptr;
-    return ptr;
-}
-
+*/
+    
+//    return;
+//}
+//void putFunc(string funcName){
+   /* if( areadyExists(sym_name) ){
+        printf("A variavel \"%s\" ja existe\n",sym_name);
+        exit(1);
+    }
+*/
+//    sym_table.push_back({funcName});
+//    return;
+//}
+/*
 symrec* getSym(char *sym_name){
     symrec *ptr;
     for( ptr=sym_table; ptr!=(symrec*)0; ptr=(symrec*)ptr->next )
@@ -75,3 +83,4 @@ int areadyExists(char* nome){
     }
     return 1;
 }
+*/
