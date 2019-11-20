@@ -39,7 +39,6 @@
 %token<value>         T_INTEGER_VALUE T_FLOAT_VALUE
 %token<literal>         T_LITERAL
 %type<integer> type cmdPrint
-%type<str> operator
 %type<value> arithmeticExpression
 %type<str> idList
 %start program
@@ -171,6 +170,7 @@ paramList:paramList T_COMMA arithmeticExpression
          ;
 arithmeticExpression:T_INTEGER_VALUE {$$=$1;cout<<$1.intValue<<"<==========="<<endl;}
                     |T_FLOAT_VALUE {$$=$1;cout<<$1.floatValue<<"<==========="<<endl;}
+                    |T_OPEN_PARENTHESES arithmeticExpression T_CLOSE_PARENTHESES
                     |arithmeticExpression T_PLUS arithmeticExpression
                     {
                         VALUE op1 = { $1.type, $1.intValue, $1.isResult };
@@ -181,8 +181,42 @@ arithmeticExpression:T_INTEGER_VALUE {$$=$1;cout<<$1.intValue<<"<==========="<<e
                             op2.floatValue=$3.floatValue;
                         $$.type=calc(op1,$2,op2);
                         $$.isResult=true;
-
                     }
+                    |arithmeticExpression T_MINUS arithmeticExpression
+                    {
+                        VALUE op1 = { $1.type, $1.intValue, $1.isResult };
+                        if($1.type==FLOAT)
+                            op1.floatValue=$1.floatValue;
+                        VALUE op2 = { $3.type, $3.intValue, $3.isResult };
+                        if($3.type==FLOAT)
+                            op2.floatValue=$3.floatValue;
+                        $$.type=calc(op1,$2,op2);
+                        $$.isResult=true;
+                    }
+                    |arithmeticExpression T_DIVIDE arithmeticExpression
+                    {
+                        VALUE op1 = { $1.type, $1.intValue, $1.isResult };
+                        if($1.type==FLOAT)
+                            op1.floatValue=$1.floatValue;
+                        VALUE op2 = { $3.type, $3.intValue, $3.isResult };
+                        if($3.type==FLOAT)
+                            op2.floatValue=$3.floatValue;
+                        $$.type=calc(op1,$2,op2);
+                        $$.isResult=true;
+                    }
+                    |arithmeticExpression T_MULTIPLY arithmeticExpression
+                    {
+                        VALUE op1 = { $1.type, $1.intValue, $1.isResult };
+                        if($1.type==FLOAT)
+                            op1.floatValue=$1.floatValue;
+                        VALUE op2 = { $3.type, $3.intValue, $3.isResult };
+                        if($3.type==FLOAT)
+                            op2.floatValue=$3.floatValue;
+                        $$.type=calc(op1,$2,op2);
+                        $$.isResult=true;
+                    }
+
+
 logicExpression:
                ;
 
