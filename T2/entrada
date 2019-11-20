@@ -1,5 +1,8 @@
 {
-    int a;
-    print("oi");
+    float a,b;
+    string c;
+    a=2;
+    c="oi";
+    print(a+2/2);
     return;
 }

@@ -3,7 +3,6 @@
 
 
 void initFile(){
-
     output.push_back(".class public output");
     output.push_back(".super java/lang/Object");
 
@@ -80,4 +79,24 @@ int calc(VALUE op1,char* op, VALUE op2){
     aux.append(op);
     output.push_back(aux);
     return res;
+}
+
+void store(string name){
+    var v = getSym(name);
+    if(v.type==STRING)
+        output.push_back("\tastore "+to_string(v.local));
+    else if(v.type==INT)
+        output.push_back("\tfstore "+to_string(v.local));
+    else if(v.type==FLOAT)
+        output.push_back("\tfstore "+to_string(v.local));
+}
+
+void load(string name){
+    var v = getSym(name);
+    if(v.type==STRING)
+        output.push_back("\taload "+to_string(v.local));
+    else if(v.type==INT)
+        output.push_back("\tfload "+to_string(v.local));
+    else if(v.type==FLOAT)
+        output.push_back("\tfload "+to_string(v.local));
 }

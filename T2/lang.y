@@ -40,7 +40,7 @@
 %token<value>         T_INTEGER_VALUE T_FLOAT_VALUE
 %token<literal>         T_LITERAL
 %type<integer> type cmdPrint
-%type<value> arithmeticExpression
+%type<integer> arithmeticExpression
 %type<str> idList
 %start program
 %token
@@ -70,22 +70,28 @@
     T_LESS_EQUALS
     T_MORE_EQUALS
     T_DOBLE_QUOTES
+    T_MAIN
 %left T_PLUS T_MINUS
 %left T_MULTIPLY T_DIVIDE
+%right MIN
 
 %%
 
 program:functionList mainBlock
-       |mainBlock {symtable.fir1s.push_back({"test"});cout<<symtable.size()<<endl;}
+       |mainBlock
        ;
 
 functionList:functionList function
             |function
             ;
 
-function:returnType T_IDENTIFIER T_OPEN_PARENTHESES declareParams T_CLOSE_PARENTHESES mainBlock
-        |returnType T_IDENTIFIER T_OPEN_PARENTHESES T_CLOSE_PARENTHESES mainBlock
+function:returnType T_IDENTIFIER T_OPEN_PARENTHESES declareParams T_CLOSE_PARENTHESES funcBlock
+        |returnType T_IDENTIFIER T_OPEN_PARENTHESES T_CLOSE_PARENTHESES funcBlock
         ;
+
+funcBlock:T_OPEN_BRACE declarations cmdList T_CLOSE_BRACE
+         |T_OPEN_BRACE cmdList T_CLOSE_BRACE
+         ;
 
 returnType:type
           |T_VOID
@@ -114,8 +120,8 @@ type:T_INTEGER {tmp=INT;}
     |T_FLOAT {tmp=FLOAT;}
     ;
 
-idList:idList T_COMMA T_IDENTIFIER {}
-      |T_IDENTIFIER {}
+idList:idList T_COMMA T_IDENTIFIER {putSym($3,tmp);}
+      |T_IDENTIFIER {putSym($1,tmp);}
       ;
 
 block:T_OPEN_BRACE cmdList T_CLOSE_BRACE
@@ -146,11 +152,11 @@ cmdIf:T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
 cmdWhile:T_WHILE T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
         ;
 
-cmdAtribuition:T_IDENTIFIER T_ATRIBUITION arithmeticExpression T_SEMICOLON
-              |T_IDENTIFIER T_ATRIBUITION T_LITERAL T_SEMICOLON
+cmdAtribuition:T_IDENTIFIER T_ATRIBUITION arithmeticExpression T_SEMICOLON {store($1);}
+              |T_IDENTIFIER T_ATRIBUITION T_LITERAL T_SEMICOLON {string str = $3;output.push_back("\tldc \""+str+"\""); store($1);}
               ;
 
-cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printEnd(FLOAT);}
+cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printEnd($4);}
         |T_PRINT T_OPEN_PARENTHESES {printInit();} T_LITERAL T_CLOSE_PARENTHESES T_SEMICOLON {printEnd(STRING);}
         ;
 
@@ -172,11 +178,12 @@ paramList:paramList T_COMMA arithmeticExpression
 arithmeticExpression:T_INTEGER_VALUE { output.push_back("\tldc "+to_string((float)$1.intValue));}
                     |T_FLOAT_VALUE { output.push_back("\tldc "+to_string($1.floatValue));}
                     |T_OPEN_PARENTHESES arithmeticExpression T_CLOSE_PARENTHESES {}
-                    |T_MINUS arithmeticExpression { output.push_back("fneg"); }
+                    |T_MINUS arithmeticExpression %prec MIN { output.push_back("fneg"); }
                     |arithmeticExpression T_PLUS arithmeticExpression { output.push_back("\tfadd"); }
                     |arithmeticExpression T_MINUS arithmeticExpression { output.push_back("\tfsub"); }
                     |arithmeticExpression T_DIVIDE arithmeticExpression { output.push_back("\tfdiv"); }
                     |arithmeticExpression T_MULTIPLY arithmeticExpression { output.push_back("\tfmul"); }
+                    |T_IDENTIFIER {string str = $1;load(str); if(checkType(str,STRING)) $$=STRING; else $$=FLOAT;}
                     ;
 
 
@@ -197,7 +204,8 @@ int main(int argc,char* argv[]) {
         yyparse();
     } while(!feof(yyin));
     printf("Nenhum erro encontrado\n");
-    /*showSymTable();
+    showSymTable();
+    /*
     for(string str:output){
         cout<<str<<endl;
     }*/

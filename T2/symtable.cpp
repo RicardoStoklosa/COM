@@ -1,6 +1,7 @@
 #include<iostream>
 #include<vector>
 #include <string.h>
+#include<iterator>
 #define INT 0
 #define FLOAT 1
 #define STRING 2
@@ -14,73 +15,68 @@ struct var{
     int type;
     int local;
 };
-struct func{
-    string name;
-    vector<var> variables;
-};
-vector<pair<int,vector<var>>>symtable;
+vector<var>symtable;
 
-//void putSym(string nome, int type);
-//void putFunc(string nome);
-/*
-symrec *getSym(char* nome);
-char* getType(int type);
+void putSym(string nome, int type);
+var getSym(string nome);
+string getType(int type);
 void showSymTable();
-int areadyExists(char* nome);
-*/
-//void putSym(string symName, int type, string funcName){
-   /* if( areadyExists(sym_name) ){
-        printf("A variavel \"%s\" ja existe\n",sym_name);
+bool areadyExists(string nome);
+bool checkType(string nome,int type);
+
+void putSym(string symName, int type){
+    if( areadyExists(symName) ){
+        cout<<"A variavel \""<<symName<<"\" ja existe\n"<<endl;
         exit(1);
     }
-*/
+    symtable.push_back({symName,type,(int)symtable.size()});
+
     
-//    return;
-//}
-//void putFunc(string funcName){
-   /* if( areadyExists(sym_name) ){
-        printf("A variavel \"%s\" ja existe\n",sym_name);
-        exit(1);
+    return;
+}
+
+var getSym(string symName){
+    for(var v:symtable){
+        if(v.name==symName)
+            return v;
     }
-*/
-//    sym_table.push_back({funcName});
-//    return;
-//}
-/*
-symrec* getSym(char *sym_name){
-    symrec *ptr;
-    for( ptr=sym_table; ptr!=(symrec*)0; ptr=(symrec*)ptr->next )
-        if(strcmp(ptr->name,sym_name)==0)
-            return ptr;
-    return 0;
+    cout<<"A variavel \""<<symName<<"\" não existe\n"<<endl;
+    exit(1);
 }
 void showSymTable(){
-    symrec *ptr;
-    printf("\ntabela de simbolos\n");
-    printf("==================\n");
-    for( ptr=sym_table; ptr!=(symrec*)0; ptr=(symrec*)ptr->next ){
-        printf("{%s:%s}\n",ptr->name,getType(ptr->type));
+    cout<<endl<<"tabela de simbolos"<<endl;
+    cout<<"=================="<<endl;
+    for( var v:symtable ){
+        cout<<"["<<v.name<<" | "<<getType(v.type)<<"] := "<<v.local<<endl;
     }
-    printf("\n==================\n");
+    cout<<endl<<"=================="<<endl;
 }
-
-char* getType(int type){
-    char *res;
-    res=(char*)malloc(7*sizeof(char));
+string getType(int type){
     if(type == INT)
-        strcpy(res,"int");
+        return "int";
     else if(type == FLOAT)
-        strcpy(res,"float");
+        return "float";
     else if(type == STRING)
-        strcpy(res,"string");
-    return res;
+        return "string";
+    return "";
 }
 
-int areadyExists(char* nome){
-    symrec* ptr = getSym(nome);
-    if( ptr==0 ){
-        return 0;
+
+bool areadyExists(string nome){
+    for(var v:symtable){
+        if(v.name==nome)
+            return true;
     }
-    return 1;
+    return false;
 }
-*/
+
+bool checkType(string nome,int type){
+    for(var v:symtable){
+        if(v.name==nome)
+            if(v.type==type)
+                return true;
+            else
+                return false;
+    }
+    return false;
+}
