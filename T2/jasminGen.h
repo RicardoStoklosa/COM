@@ -8,6 +8,14 @@
 #define VAR 3
 
 using namespace std;
+struct VALUE{
+    int type;
+    union{
+        int intValue;
+        float floatValue;
+    };
+    bool isResult;
+};
 
 struct sym{
     int type;
@@ -28,5 +36,5 @@ void mainEnd();
 void printInit();
 void printEnd(int type);
 
-void sum(sym op1,sym op2);
+int calc(VALUE op1,char* op,VALUE op2);
 

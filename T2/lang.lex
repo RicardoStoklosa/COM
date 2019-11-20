@@ -55,10 +55,10 @@ char* removeQuotes(char* literal){
 "||"                        {return T_OR;;}
 
 "="                         {return T_ATRIBUITION;}
-"+"                         {return T_PLUS;}
-"-"                         {return T_MINUS;}
-"*"                         {return T_MULTIPLY;}
-"/"                         {return T_DIVIDE;}
+"+"                         {strcpy(yylval.str,"add");return T_PLUS;}
+"-"                         {strcpy(yylval.str,"sub");return T_MINUS;}
+"*"                         {strcpy(yylval.str,"mul");return T_MULTIPLY;}
+"/"                         {strcpy(yylval.str,"div");return T_DIVIDE;}
 
 "=="                        {return T_EQUALS;}
 "!="                        {return T_DIFERENT;}
@@ -69,8 +69,8 @@ char* removeQuotes(char* literal){
 
 
 [A-Za-z_][A-Za-z0-9_]*      {/*yylval.indentifier = strdup(yytext);*/ return T_IDENTIFIER;}
-[0-9]+                      {yylval.integer = atoi(yytext); return T_INTEGER_VALUE;}
-[0-9]+\.[0-9]+              {yylval.floatValue = atof(yytext); return T_FLOAT_VALUE;}
+[0-9]+                      {yylval.value.type=0; yylval.value.intValue=atoi(yytext); yylval.value.isResult=false; return T_INTEGER_VALUE;}
+[0-9]+\.[0-9]+              {yylval.value.type=1; yylval.value.floatValue=atof(yytext); yylval.value.isResult=false; return T_FLOAT_VALUE;}
 
 \"[^\"]*\"                  {yylval.literal = removeQuotes(strdup(yytext)); return T_LITERAL;}
 [ \t]

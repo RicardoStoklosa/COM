@@ -45,5 +45,39 @@ void writeFile(){
     }
 }
 
-void sum(sym op1,sym op2){
+int calc(VALUE op1,char* op, VALUE op2){
+    int res =-1;
+    string aux;
+    cout<<"RE="<<op1.isResult<<endl;
+    if(op1.type==FLOAT || op2.type==FLOAT){
+        res=1;
+        aux="\tf";
+        if(!op1.isResult){
+            if(op1.type==INT)
+                output.push_back("\tldc "+to_string((float)op1.intValue));
+            else
+                output.push_back("\tldc "+to_string(op1.floatValue));
+        }
+        if(!op2.isResult){
+            if(op2.type==INT)
+                output.push_back("\tldc "+to_string((float)op2.intValue));
+            else
+                output.push_back("\tldc "+to_string(op2.floatValue));
+        }
+
+    }
+    else{
+        res=0;
+        aux="\ti";
+
+        if(!op1.isResult){
+            output.push_back("\tldc "+to_string(op1.intValue));
+        }
+        if(!op2.isResult){
+            output.push_back("\tldc "+to_string(op2.intValue));
+        }
+    }
+    aux.append(op);
+    output.push_back(aux);
+    return res;
 }

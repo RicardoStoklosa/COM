@@ -13,16 +13,6 @@
     void yyerror(const char* s);
     void yyerrorExpected(const char* recived, char* expected);
     int tmp=-1;
-    struct value{
-        int type;
-        union{
-            int intValue;
-            float floatValue;
-            char* op;
-        };
-        bool isResult;
-    };
-    vector<value> arithmetic;
 
 %}
 %define parse.error verbose
@@ -34,7 +24,7 @@
     int integer;
     float floatValue;
     char* literal;
-    struct {
+    struct VALUE{
         int type;
         union{
             int intValue;
@@ -45,13 +35,12 @@
 }
 
 %token<indentifier>     T_IDENTIFIER
-%token<integer>         T_INTEGER_VALUE
-%token<floatValue>      T_FLOAT_VALUE
+%token<str>     T_PLUS T_MINUS T_MULTIPLY T_DIVIDE
+%token<value>         T_INTEGER_VALUE T_FLOAT_VALUE
 %token<literal>         T_LITERAL
 %type<integer> type cmdPrint
 %type<str> operator
 %type<value> arithmeticExpression
-%type<value> arithmeticStack
 %type<str> idList
 %start program
 %token
@@ -64,8 +53,7 @@
     T_VOID
     T_INTEGER
     T_STRING
-    T_FLOAT
-    T_OPEN_PARENTHESES
+    T_FLOAT T_OPEN_PARENTHESES
     T_CLOSE_PARENTHESES
     T_OPEN_BRACE
     T_CLOSE_BRACE
@@ -75,10 +63,6 @@
     T_AND
     T_OR
     T_ATRIBUITION
-    T_PLUS
-    T_MINUS
-    T_MULTIPLY
-    T_DIVIDE
     T_EQUALS
     T_DIFERENT
     T_LESS
@@ -86,6 +70,8 @@
     T_LESS_EQUALS
     T_MORE_EQUALS
     T_DOBLE_QUOTES
+%left T_PLUS T_MINUS
+%left T_MULTIPLY T_DIVIDE
 
 %%
 
@@ -183,30 +169,20 @@ paramList:paramList T_COMMA arithmeticExpression
          |arithmeticExpression
          |T_LITERAL
          ;
+arithmeticExpression:T_INTEGER_VALUE {$$=$1;cout<<$1.intValue<<"<==========="<<endl;}
+                    |T_FLOAT_VALUE {$$=$1;cout<<$1.floatValue<<"<==========="<<endl;}
+                    |arithmeticExpression T_PLUS arithmeticExpression
+                    {
+                        VALUE op1 = { $1.type, $1.intValue, $1.isResult };
+                        if($1.type==FLOAT)
+                            op1.floatValue=$1.floatValue;
+                        VALUE op2 = { $3.type, $3.intValue, $3.isResult };
+                        if($3.type==FLOAT)
+                            op2.floatValue=$3.floatValue;
+                        $$.type=calc(op1,$2,op2);
+                        $$.isResult=true;
 
-arithmeticExpression:arithmeticStack {
-                    for(value v: arithmetic){
-                        if(v.type==INT)
-                            cout<<v.intValue<<" ";
-                        else if(v.type==FLOAT)
-                            cout<<v.floatValue<<" ";
-                        else if(v.type==-1)
-                            cout<<v.op<<" ";
                     }
-                       cout<<endl;
-                    }
-                    ;
-
-arithmeticStack:T_INTEGER_VALUE {value v; v.type=0; v.intValue=$1; v.isResult=false;arithmetic.push_back(v);}
-                |T_FLOAT_VALUE {value v;v.type=1; v.floatValue=$1; v.isResult=false;arithmetic.push_back(v);}
-                |arithmeticStack T_PLUS arithmeticStack{value v;v.type=-1; v.op="add"; v.isResult=false;arithmetic.push_back(v); }
-                ;
-operator:T_PLUS {strcpy($$,"add");}
-        |T_MINUS {strcpy($$,"neg");}
-        |T_MULTIPLY {strcpy($$,"mul");}
-        |T_DIVIDE {strcpy($$,"div");}
-        ;
-
 logicExpression:
                ;
 
