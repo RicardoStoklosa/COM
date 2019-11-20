@@ -1,17 +1,19 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include<iostream>
+#include<vector>
 #include <string.h>
 #define INT 0
 #define FLOAT 1
 #define STRING 2
 #define VAR 3
+#define FUNC 4
 
-struct symrec{
-    char *name;
-    int type;
-    struct symrec *next;
+using namespace std;
+
+struct func{
+    string name;
+    vector<int> atrr;
+
 };
-
 
 typedef struct symrec symrec;
 symrec *sym_table = (symrec *)0;

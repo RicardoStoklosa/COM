@@ -1,4 +1,5 @@
 {
-    print((1+2));
+    int a;
+    print("oi");
     return;
 }

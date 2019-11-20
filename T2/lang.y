@@ -149,7 +149,7 @@ cmdAtribuition:T_IDENTIFIER T_ATRIBUITION arithmeticExpression T_SEMICOLON
               |T_IDENTIFIER T_ATRIBUITION T_LITERAL T_SEMICOLON
               ;
 
-cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printEnd($4.type);}
+cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printEnd(FLOAT);}
         |T_PRINT T_OPEN_PARENTHESES {printInit();} T_LITERAL T_CLOSE_PARENTHESES T_SEMICOLON {printEnd(STRING);}
         ;
 
@@ -168,53 +168,15 @@ paramList:paramList T_COMMA arithmeticExpression
          |arithmeticExpression
          |T_LITERAL
          ;
-arithmeticExpression:T_INTEGER_VALUE {$$=$1;cout<<$1.intValue<<"<==========="<<endl;}
-                    |T_FLOAT_VALUE {$$=$1;cout<<$1.floatValue<<"<==========="<<endl;}
-                    |T_OPEN_PARENTHESES arithmeticExpression T_CLOSE_PARENTHESES
-                    |arithmeticExpression T_PLUS arithmeticExpression
-                    {
-                        VALUE op1 = { $1.type, $1.intValue, $1.isResult };
-                        if($1.type==FLOAT)
-                            op1.floatValue=$1.floatValue;
-                        VALUE op2 = { $3.type, $3.intValue, $3.isResult };
-                        if($3.type==FLOAT)
-                            op2.floatValue=$3.floatValue;
-                        $$.type=calc(op1,$2,op2);
-                        $$.isResult=true;
-                    }
-                    |arithmeticExpression T_MINUS arithmeticExpression
-                    {
-                        VALUE op1 = { $1.type, $1.intValue, $1.isResult };
-                        if($1.type==FLOAT)
-                            op1.floatValue=$1.floatValue;
-                        VALUE op2 = { $3.type, $3.intValue, $3.isResult };
-                        if($3.type==FLOAT)
-                            op2.floatValue=$3.floatValue;
-                        $$.type=calc(op1,$2,op2);
-                        $$.isResult=true;
-                    }
-                    |arithmeticExpression T_DIVIDE arithmeticExpression
-                    {
-                        VALUE op1 = { $1.type, $1.intValue, $1.isResult };
-                        if($1.type==FLOAT)
-                            op1.floatValue=$1.floatValue;
-                        VALUE op2 = { $3.type, $3.intValue, $3.isResult };
-                        if($3.type==FLOAT)
-                            op2.floatValue=$3.floatValue;
-                        $$.type=calc(op1,$2,op2);
-                        $$.isResult=true;
-                    }
-                    |arithmeticExpression T_MULTIPLY arithmeticExpression
-                    {
-                        VALUE op1 = { $1.type, $1.intValue, $1.isResult };
-                        if($1.type==FLOAT)
-                            op1.floatValue=$1.floatValue;
-                        VALUE op2 = { $3.type, $3.intValue, $3.isResult };
-                        if($3.type==FLOAT)
-                            op2.floatValue=$3.floatValue;
-                        $$.type=calc(op1,$2,op2);
-                        $$.isResult=true;
-                    }
+arithmeticExpression:T_INTEGER_VALUE { output.push_back("\tldc "+to_string((float)$1.intValue));}
+                    |T_FLOAT_VALUE { output.push_back("\tldc "+to_string($1.floatValue));}
+                    |T_OPEN_PARENTHESES arithmeticExpression T_CLOSE_PARENTHESES {}
+                    |T_MINUS arithmeticExpression { output.push_back("fneg"); }
+                    |arithmeticExpression T_PLUS arithmeticExpression { output.push_back("\tfadd"); }
+                    |arithmeticExpression T_MINUS arithmeticExpression { output.push_back("\tfsub"); }
+                    |arithmeticExpression T_DIVIDE arithmeticExpression { output.push_back("\tfdiv"); }
+                    |arithmeticExpression T_MULTIPLY arithmeticExpression { output.push_back("\tfmul"); }
+                    ;
 
 
 logicExpression:
