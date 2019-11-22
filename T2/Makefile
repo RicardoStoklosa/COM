@@ -10,7 +10,7 @@ lang: lex.yy.c lang.tab.c lang.tab.h
 	g++ -o analizador lang.tab.c lex.yy.c -g
 
 jasmin: analizador
-	java -jar jasmin.jar output.jout
+	java -jar jasmin.jar -g output.jout
 	java output
 
 analizador: lang

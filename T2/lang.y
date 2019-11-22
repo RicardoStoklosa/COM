@@ -41,7 +41,7 @@
 %token<value>         T_INTEGER_VALUE T_FLOAT_VALUE
 %token<literal>         T_LITERAL
 %type<integer> type cmdPrint
-%type<integer> arithmeticExpression
+%type<integer> arithmeticExpression mixed_expr
 %type<str> idList
 %start program
 %token
@@ -147,8 +147,8 @@ return:T_RETURN arithmeticExpression T_SEMICOLON {output.push_back("\treturn");}
       |T_RETURN T_SEMICOLON {output.push_back("\treturn");}
       ;
 
-cmdIf:T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
-     |T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block T_ELSE block
+cmdIf:T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES {output.push_back("\tL1:");} block
+     |T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES {} block T_ELSE block
      ;
 
 cmdWhile:T_WHILE T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
@@ -162,7 +162,10 @@ cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_
         |T_PRINT T_OPEN_PARENTHESES {printInit();} T_LITERAL T_CLOSE_PARENTHESES T_SEMICOLON {printEnd(STRING);}
         ;
 
-cmdRead:T_READ T_OPEN_PARENTHESES T_IDENTIFIER T_CLOSE_PARENTHESES T_SEMICOLON
+cmdRead:T_READ T_OPEN_PARENTHESES T_IDENTIFIER T_CLOSE_PARENTHESES T_SEMICOLON { var v =getSym($3);
+                                                                                 read(v.type); 
+                                                                                 store(v.name);
+                                                                               }
        ;
 
 procCall:functionCall T_SEMICOLON
@@ -178,7 +181,7 @@ paramList:paramList T_COMMA arithmeticExpression
          |T_LITERAL
          ;
 
-arithmeticExpression:mixed_expr {$$=FLOAT;}
+arithmeticExpression:mixed_expr {if($1==INT)$$=FLOAT; else $$=$1;}
                     |expr{$$=INT;}
                     ;
 
@@ -190,6 +193,7 @@ mixed_expr: T_FLOAT_VALUE { output.push_back("\tldc "+to_string($1.floatValue));
           if(v.type==INT){
               output.push_back("\ti2f");
           }
+          $$=v.type;
           }
           | mixed_expr T_PLUS mixed_expr { output.push_back("\tfadd"); }
           | mixed_expr T_MINUS mixed_expr { output.push_back("\tfsub"); }
@@ -215,7 +219,7 @@ expr: T_INTEGER_VALUE { output.push_back("\tldc "+to_string($1.intValue)); }
     | T_OPEN_PARENTHESES expr T_CLOSE_PARENTHESES
     ;
 
-logicExpression:
+logicExpression:arithmeticExpression T_LESS arithmeticExpression {output.push_back("\tif_fcmplt L1");}
                ;
 
 %%

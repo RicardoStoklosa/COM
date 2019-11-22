@@ -37,6 +37,23 @@ void printEnd(int type){
         output.push_back("\tinvokevirtual java/io/PrintStream/println(F)V");
 }
 
+void read(int type){
+    string t;
+	output.push_back("\tnew java/util/Scanner");
+	output.push_back("\tdup");
+	output.push_back("\tgetstatic java/lang/System/in Ljava/io/InputStream;");
+	output.push_back("\tinvokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V");
+    if(type==STRING){
+	    output.push_back("\tinvokevirtual java/util/Scanner/nextLine()Ljava/lang/String;"); 
+    }
+    else if(type==INT){
+	    output.push_back("\tinvokevirtual java/util/Scanner/nextInt()I"); 
+    }
+    else if(type==FLOAT){
+	    output.push_back("\tinvokevirtual java/util/Scanner/nextFloat()F"); 
+    }
+}
+
 void writeFile(){
     ofstream outFile ("output.jout");
     for(string line:output){
