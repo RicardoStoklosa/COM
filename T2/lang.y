@@ -2,6 +2,7 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+    #include<vector>
     #include "symtable.cpp"
     #include "jasminGen.cpp"
     #define INT 0
@@ -13,7 +14,7 @@
     void yyerror(const char* s);
     void yyerrorExpected(const char* recived, char* expected);
     int tmp=-1;
-    
+
 
 %}
 %define parse.error verbose
@@ -74,6 +75,7 @@
 %left T_PLUS T_MINUS
 %left T_MULTIPLY T_DIVIDE
 %right MIN
+%right E
 
 %%
 
@@ -156,7 +158,7 @@ cmdAtribuition:T_IDENTIFIER T_ATRIBUITION arithmeticExpression T_SEMICOLON {stor
               |T_IDENTIFIER T_ATRIBUITION T_LITERAL T_SEMICOLON {string str = $3;output.push_back("\tldc \""+str+"\""); store($1);}
               ;
 
-cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printEnd($4);}
+cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printf("==>%d\n",$4);printEnd($4);}
         |T_PRINT T_OPEN_PARENTHESES {printInit();} T_LITERAL T_CLOSE_PARENTHESES T_SEMICOLON {printEnd(STRING);}
         ;
 
@@ -175,17 +177,43 @@ paramList:paramList T_COMMA arithmeticExpression
          |arithmeticExpression
          |T_LITERAL
          ;
-arithmeticExpression:T_INTEGER_VALUE { output.push_back("\tldc "+to_string((float)$1.intValue));}
-                    |T_FLOAT_VALUE { output.push_back("\tldc "+to_string($1.floatValue));}
-                    |T_OPEN_PARENTHESES arithmeticExpression T_CLOSE_PARENTHESES {}
-                    |T_MINUS arithmeticExpression %prec MIN { output.push_back("fneg"); }
-                    |arithmeticExpression T_PLUS arithmeticExpression { output.push_back("\tfadd"); }
-                    |arithmeticExpression T_MINUS arithmeticExpression { output.push_back("\tfsub"); }
-                    |arithmeticExpression T_DIVIDE arithmeticExpression { output.push_back("\tfdiv"); }
-                    |arithmeticExpression T_MULTIPLY arithmeticExpression { output.push_back("\tfmul"); }
-                    |T_IDENTIFIER {string str = $1;load(str); if(checkType(str,STRING)) $$=STRING; else $$=FLOAT;}
+
+arithmeticExpression:mixed_expr {$$=FLOAT;}
+                    |expr{$$=INT;}
                     ;
 
+mixed_expr: T_FLOAT_VALUE { output.push_back("\tldc "+to_string($1.floatValue)); }
+          | T_IDENTIFIER {
+          string str=$1;
+          load(str);
+          var v = getSym(str);
+          if(v.type==INT){
+              output.push_back("\ti2f");
+          }
+          }
+          | mixed_expr T_PLUS mixed_expr { output.push_back("\tfadd"); }
+          | mixed_expr T_MINUS mixed_expr { output.push_back("\tfsub"); }
+          | mixed_expr T_MULTIPLY mixed_expr { output.push_back("\tfmul"); }
+          | mixed_expr T_DIVIDE mixed_expr { output.push_back("\tfdiv"); }
+          | T_OPEN_PARENTHESES mixed_expr T_CLOSE_PARENTHESES     {}
+          | expr T_PLUS  mixed_expr { pen("\ti2f"); output.push_back("\tfadd"); }
+          | expr T_MINUS  mixed_expr { pen("\ti2f"); output.push_back("\tfsub"); }
+          | expr T_MULTIPLY  mixed_expr { pen("\ti2f"); output.push_back("\tfmul"); }
+          | expr T_DIVIDE  mixed_expr { pen("\ti2f"); output.push_back("\tfdiv"); }
+          | mixed_expr T_PLUS expr { output.push_back("\ti2f"); output.push_back("\tfadd"); }
+          | mixed_expr T_MINUS expr { output.push_back("\ti2f"); output.push_back("\tfsub"); }
+          | mixed_expr T_MULTIPLY expr { output.push_back("\ti2f"); output.push_back("\tfmul"); }
+          | mixed_expr T_DIVIDE expr { output.push_back("\ti2f"); output.push_back("\tfdiv"); }
+          ;
+
+
+expr: T_INTEGER_VALUE { output.push_back("\tldc "+to_string($1.intValue)); }
+    | expr T_PLUS expr { output.push_back("\tiadd"); }
+    | expr T_MINUS expr     { output.push_back("\tisub"); }
+    | expr T_MULTIPLY expr { output.push_back("\timul"); }
+    | expr T_DIVIDE expr { output.push_back("\ti2f"); output.push_back("\tfdiv"); }
+    | T_OPEN_PARENTHESES expr T_CLOSE_PARENTHESES
+    ;
 
 logicExpression:
                ;

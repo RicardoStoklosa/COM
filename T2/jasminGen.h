@@ -1,6 +1,7 @@
 #include<iostream>
 #include<string>
 #include<vector>
+#include<iterator>
 #include<fstream>
 #define INT 0
 #define FLOAT 1
@@ -38,3 +39,4 @@ void printEnd(int type);
 
 int calc(VALUE op1,char* op,VALUE op2);
 
+void pen(string str);

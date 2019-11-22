@@ -86,7 +86,7 @@ void store(string name){
     if(v.type==STRING)
         output.push_back("\tastore "+to_string(v.local));
     else if(v.type==INT)
-        output.push_back("\tfstore "+to_string(v.local));
+        output.push_back("\tistore "+to_string(v.local));
     else if(v.type==FLOAT)
         output.push_back("\tfstore "+to_string(v.local));
 }
@@ -96,7 +96,11 @@ void load(string name){
     if(v.type==STRING)
         output.push_back("\taload "+to_string(v.local));
     else if(v.type==INT)
-        output.push_back("\tfload "+to_string(v.local));
+        output.push_back("\tiload "+to_string(v.local));
     else if(v.type==FLOAT)
         output.push_back("\tfload "+to_string(v.local));
+}
+
+void pen(string str){
+    output.insert(output.end()-1,str);
 }
