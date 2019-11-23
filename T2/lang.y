@@ -14,6 +14,7 @@
     void yyerror(const char* s);
     void yyerrorExpected(const char* recived, char* expected);
     int tmp=-1;
+    char label ='a';
 
 
 %}
@@ -41,7 +42,7 @@
 %token<value>         T_INTEGER_VALUE T_FLOAT_VALUE
 %token<literal>         T_LITERAL
 %type<integer> type cmdPrint
-%type<integer> arithmeticExpression mixed_expr
+%type<integer> arithmeticExpression
 %type<str> idList
 %start program
 %token
@@ -76,6 +77,8 @@
 %left T_MULTIPLY T_DIVIDE
 %right MIN
 %right E
+%nonassoc "mixed_expr"
+%precedence "expr"
 
 %%
 
@@ -147,8 +150,8 @@ return:T_RETURN arithmeticExpression T_SEMICOLON {output.push_back("\treturn");}
       |T_RETURN T_SEMICOLON {output.push_back("\treturn");}
       ;
 
-cmdIf:T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES {output.push_back("\tL1:");} block
-     |T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES {} block T_ELSE block
+cmdIf:T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
+     |T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block T_ELSE {} block
      ;
 
 cmdWhile:T_WHILE T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
@@ -163,7 +166,7 @@ cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_
         ;
 
 cmdRead:T_READ T_OPEN_PARENTHESES T_IDENTIFIER T_CLOSE_PARENTHESES T_SEMICOLON { var v =getSym($3);
-                                                                                 read(v.type); 
+                                                                                 read(v.type);
                                                                                  store(v.name);
                                                                                }
        ;
@@ -181,45 +184,21 @@ paramList:paramList T_COMMA arithmeticExpression
          |T_LITERAL
          ;
 
-arithmeticExpression:mixed_expr {if($1==INT)$$=FLOAT; else $$=$1;}
-                    |expr{$$=INT;}
-                    ;
-
-mixed_expr: T_FLOAT_VALUE { output.push_back("\tldc "+to_string($1.floatValue)); }
-          | T_IDENTIFIER {
-          string str=$1;
-          load(str);
-          var v = getSym(str);
-          if(v.type==INT){
-              output.push_back("\ti2f");
-          }
-          $$=v.type;
-          }
-          | mixed_expr T_PLUS mixed_expr { output.push_back("\tfadd"); }
-          | mixed_expr T_MINUS mixed_expr { output.push_back("\tfsub"); }
-          | mixed_expr T_MULTIPLY mixed_expr { output.push_back("\tfmul"); }
-          | mixed_expr T_DIVIDE mixed_expr { output.push_back("\tfdiv"); }
-          | T_OPEN_PARENTHESES mixed_expr T_CLOSE_PARENTHESES     {}
-          | expr T_PLUS  mixed_expr { pen("\ti2f"); output.push_back("\tfadd"); }
-          | expr T_MINUS  mixed_expr { pen("\ti2f"); output.push_back("\tfsub"); }
-          | expr T_MULTIPLY  mixed_expr { pen("\ti2f"); output.push_back("\tfmul"); }
-          | expr T_DIVIDE  mixed_expr { pen("\ti2f"); output.push_back("\tfdiv"); }
-          | mixed_expr T_PLUS expr { output.push_back("\ti2f"); output.push_back("\tfadd"); }
-          | mixed_expr T_MINUS expr { output.push_back("\ti2f"); output.push_back("\tfsub"); }
-          | mixed_expr T_MULTIPLY expr { output.push_back("\ti2f"); output.push_back("\tfmul"); }
-          | mixed_expr T_DIVIDE expr { output.push_back("\ti2f"); output.push_back("\tfdiv"); }
-          ;
-
-
-expr: T_INTEGER_VALUE { output.push_back("\tldc "+to_string($1.intValue)); }
-    | expr T_PLUS expr { output.push_back("\tiadd"); }
-    | expr T_MINUS expr     { output.push_back("\tisub"); }
-    | expr T_MULTIPLY expr { output.push_back("\timul"); }
-    | expr T_DIVIDE expr { output.push_back("\ti2f"); output.push_back("\tfdiv"); }
-    | T_OPEN_PARENTHESES expr T_CLOSE_PARENTHESES
+arithmeticExpression: T_INTEGER_VALUE { output.push_back("\tldc "+to_string($1.intValue)); }
+    | arithmeticExpression T_PLUS arithmeticExpression  { output.push_back("\tiadd"); }
+    | arithmeticExpression T_MINUS arithmeticExpression     { output.push_back("\tisub"); }
+    | arithmeticExpression T_MULTIPLY arithmeticExpression { output.push_back("\timul"); }
+    | arithmeticExpression T_DIVIDE arithmeticExpression { output.push_back("\tidiv"); }
+    | T_OPEN_PARENTHESES arithmeticExpression T_CLOSE_PARENTHESES {}
+    | T_IDENTIFIER {
+        string str=$1;
+        load(str);
+        var v = getSym(str);
+        $$=v.type;
+        }
     ;
 
-logicExpression:arithmeticExpression T_LESS arithmeticExpression {output.push_back("\tif_fcmplt L1");}
+logicExpression:arithmeticExpression T_LESS arithmeticExpression {output.push_back("\tif_icmplt "); output.push_back("\test");}
                ;
 
 %%

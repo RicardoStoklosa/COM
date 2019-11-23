@@ -60,12 +60,12 @@ char* removeQuotes(char* literal){
 "*"                         {strcpy(yylval.str,"mul");return T_MULTIPLY;}
 "/"                         {strcpy(yylval.str,"div");return T_DIVIDE;}
 
-"=="                        {return T_EQUALS;}
-"!="                        {return T_DIFERENT;}
-"<"                         {return T_LESS;}
-">"                         {return T_MORE;}
-"<="                        {return T_LESS_EQUALS;}
-">="                        {return T_MORE_EQUALS;}
+"=="                        {strcpy(yylval.str,"eq");return T_EQUALS;}
+"!="                        {strcpy(yylval.str,"ne");return T_DIFERENT;}
+"<"                         {strcpy(yylval.str,"lt");return T_LESS;}
+">"                         {strcpy(yylval.str,"gt");return T_MORE;}
+"<="                        {strcpy(yylval.str,"le");return T_LESS_EQUALS;}
+">="                        {strcpy(yylval.str,"ge");return T_MORE_EQUALS;}
 
 
 [A-Za-z_][A-Za-z0-9_]*      {/*yylval.indentifier = strdup(yytext);*/ return T_IDENTIFIER;}

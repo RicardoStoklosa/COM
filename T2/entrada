@@ -1,8 +1,6 @@
 {
-    
-    float f;
-    print(f);
+    int b,c;
 
-    
+
     return;
 }
