@@ -31,7 +31,7 @@ void putSym(string symName, int type){
     }
     symtable.push_back({symName,type,(int)symtable.size()});
 
-    
+
     return;
 }
 
@@ -79,4 +79,8 @@ bool checkType(string nome,int type){
                 return false;
     }
     return false;
+}
+
+void cleanSymTable(){
+    symtable.clear();
 }

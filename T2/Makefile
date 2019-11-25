@@ -1,7 +1,7 @@
 all: jasmin
 
 lang.tab.c lang.tab.h:	lang.y
-	bison lang.y
+	bison -d lang.y
 
 lex.yy.c: lang.lex lang.tab.h
 	flex lang.lex

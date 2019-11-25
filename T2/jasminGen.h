@@ -6,7 +6,7 @@
 #define INT 0
 #define FLOAT 1
 #define STRING 2
-#define VAR 3
+#define VOID 3
 
 using namespace std;
 struct VALUE{

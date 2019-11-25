@@ -152,3 +152,21 @@ void compar(string cm,char label){
     str+="1";
     output.push_back(str);
 }
+
+void func(int type, char* name,int params){
+//.method public static max(II)I
+    string strName = name;
+    string res;
+    res=".method public static "+strName+"(";
+    for(int i=0;i<params;i++){
+        res+="I";
+    }
+    res+=")";
+    cout<<"+>>>>>"<<type<<endl;
+    if(type==INT)
+        res+="I";
+    else if(type==VOID){
+        res+="V";
+    }
+    output.push_back(res);
+}
