@@ -16,7 +16,6 @@
     int tmp=-1;
     char label ='A';
 
-
 %}
 %define parse.error verbose
 %locations
@@ -36,6 +35,7 @@
         bool isResult;
     } value;
     char c;
+    int contparam=0;
 }
 
 %token<indentifier>     T_IDENTIFIER
@@ -44,6 +44,7 @@
 %token<literal>         T_LITERAL
 %type<integer> type cmdPrint returnType
 %type<integer> arithmeticExpression
+%type<contparam> paramList
 %type<str> idList
 %type<c> whileIf
 %token
@@ -83,20 +84,22 @@ program:functionList mainBlock
        |mainBlock
        ;
 
-functionList:functionList function
-            |function
+functionList:functionList function { cleanSymTable(); }
+            |function { cleanSymTable(); }
             ;
 
-function:returnType T_IDENTIFIER T_OPEN_PARENTHESES declareParams T_CLOSE_PARENTHESES { func($1,$2,symtable.size()); } funcBlock
-        |returnType T_IDENTIFIER T_OPEN_PARENTHESES T_CLOSE_PARENTHESES funcBlock
+function:returnType T_IDENTIFIER T_OPEN_PARENTHESES declareParams T_CLOSE_PARENTHESES {
+        func($1,$2,symtable.size());cout<<"===="<<*itTmp<<endl<<endl;
+        } funcBlock { cout<<"===="<<*itTmp;mainEnd();showSymTable();itTmp->append(to_string(symtable.size()+1));}
+        |returnType T_IDENTIFIER T_OPEN_PARENTHESES {
+        func($1,$2,symtable.size());
+        } T_CLOSE_PARENTHESES funcBlock { mainEnd();showSymTable();itTmp->append(to_string(symtable.size()+1));}
         ;
 
 
-funcBlock:clearSym declarations cmdList T_CLOSE_BRACE
-         |clearSym cmdList T_CLOSE_BRACE
+funcBlock:T_OPEN_BRACE declarations cmdList T_CLOSE_BRACE { cout<<"=<>==="<<*itTmp<<endl<<endl; }
+         |T_OPEN_BRACE cmdList T_CLOSE_BRACE { cout<<"=<>==="<<*itTmp<<endl<<endl; }
          ;
-clearSym:T_OPEN_BRACE { cleanSymTable(); }
-        ;
 
 returnType:type {$$=tmp;}
           |T_VOID {$$=4;}
@@ -106,7 +109,7 @@ declareParams:declareParams T_COMMA param
              |param
              ;
 
-param:type T_IDENTIFIER { putSym($2,$1); }
+param:type T_IDENTIFIER { putSym($2,tmp); }
      ;
 
 mainBlock:T_OPEN_BRACE {mainInit();} declarations cmdList T_CLOSE_BRACE {mainEnd();}
@@ -145,7 +148,7 @@ command:cmdIf
        |return
        ;
 
-return:T_RETURN arithmeticExpression T_SEMICOLON {output.push_back("\treturn");}
+return:T_RETURN arithmeticExpression T_SEMICOLON {output.push_back("\tireturn");}
       |T_RETURN T_LITERAL T_SEMICOLON {output.push_back("\treturn");}
       |T_RETURN T_SEMICOLON {output.push_back("\treturn");}
       ;
@@ -190,14 +193,16 @@ cmdRead:T_READ T_OPEN_PARENTHESES T_IDENTIFIER T_CLOSE_PARENTHESES T_SEMICOLON {
 procCall:functionCall T_SEMICOLON
         ;
 
-functionCall:T_IDENTIFIER T_OPEN_PARENTHESES paramList T_CLOSE_PARENTHESES
+functionCall:T_IDENTIFIER T_OPEN_PARENTHESES paramList T_CLOSE_PARENTHESES {
+            funcCall($1,$3);
+            }
             |T_IDENTIFIER T_OPEN_PARENTHESES T_CLOSE_PARENTHESES
             ;
 
-paramList:paramList T_COMMA arithmeticExpression
-         |paramList T_COMMA T_LITERAL
-         |arithmeticExpression
-         |T_LITERAL
+paramList:paramList T_COMMA arithmeticExpression { $$++; }
+         |paramList T_COMMA T_LITERAL { $$++; }
+         |arithmeticExpression { $$++; }
+         |T_LITERAL { $$++; }
          ;
 
 arithmeticExpression: T_INTEGER_VALUE { output.push_back("\tldc "+to_string($1.intValue)); }

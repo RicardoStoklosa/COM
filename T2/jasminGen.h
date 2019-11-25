@@ -27,6 +27,7 @@ struct sym{
     };
 };
 vector<string> output;
+vector<string>::iterator itTmp;
 
 void initFile();
 void writeFile();

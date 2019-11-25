@@ -19,6 +19,7 @@ void mainInit(){
     output.push_back(".method public static main([Ljava/lang/String;)V");
     output.push_back("\t.limit stack 5");
     output.push_back("\t.limit locals 4");
+    itTmp=output.end()-1;
 }
 
 void mainEnd(){
@@ -162,11 +163,29 @@ void func(int type, char* name,int params){
         res+="I";
     }
     res+=")";
-    cout<<"+>>>>>"<<type<<endl;
     if(type==INT)
         res+="I";
     else if(type==VOID){
         res+="V";
     }
+
+    output.push_back(res);
+    output.push_back("\t.limit stack 5");
+    output.push_back("\t.limit locals 5");
+    itTmp=output.end()-1;
+}
+
+
+void funcCall(char* name,int params){
+	//invokestatic example2/max(II)I
+    string strName = name;
+    string res;
+    res="\tinvokestatic output/"+strName+"(";
+    for(int i=0;i<params;i++){
+        res+="I";
+    }
+    res+=")";
+    res+="I";
+
     output.push_back(res);
 }

@@ -1,17 +1,18 @@
-{
-    int b,c;
-    string d;
-    d="test";
-    b=0;
-    read(c);
-    while(b<c){
+int test(int a, int b){
+    while(b<a){
         b=b+1;
         if(b==3){
-            print(d);
+            print("oi");
         }
         print(b);
     }
-
+    return 0;
+}
+{
+    int b,c;
+    b=0;
+    read(c);
+    test(c,b);
 
     return;
 }
