@@ -1,6 +1,11 @@
 {
     int b,c;
-
+    b=0;
+    c=3;
+    while(b<c){
+        print(b);
+        b=b+1;
+    }
 
     return;
 }

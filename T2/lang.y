@@ -14,7 +14,7 @@
     void yyerror(const char* s);
     void yyerrorExpected(const char* recived, char* expected);
     int tmp=-1;
-    char label ='a';
+    char label ='A';
 
 
 %}
@@ -44,7 +44,6 @@
 %type<integer> type cmdPrint
 %type<integer> arithmeticExpression
 %type<str> idList
-%start program
 %token
     T_RETURN
     T_IF
@@ -55,7 +54,8 @@
     T_VOID
     T_INTEGER
     T_STRING
-    T_FLOAT T_OPEN_PARENTHESES
+    T_FLOAT
+    T_OPEN_PARENTHESES
     T_CLOSE_PARENTHESES
     T_OPEN_BRACE
     T_CLOSE_BRACE
@@ -65,21 +65,16 @@
     T_AND
     T_OR
     T_ATRIBUITION
-    T_EQUALS
-    T_DIFERENT
-    T_LESS
-    T_MORE
-    T_LESS_EQUALS
-    T_MORE_EQUALS
-    T_DOBLE_QUOTES
-    T_MAIN
+%token T_EQUALS T_DIFERENT
+ T_LESS T_MORE
+ T_LESS_EQUALS T_MORE_EQUALS
+%token  T_DOBLE_QUOTES
 %left T_PLUS T_MINUS
 %left T_MULTIPLY T_DIVIDE
 %right MIN
-%right E
-%nonassoc "mixed_expr"
-%precedence "expr"
 
+
+%start program
 %%
 
 program:functionList mainBlock
@@ -136,7 +131,7 @@ cmdList:cmdList command
        |command
        ;
 
-command:cmdIf
+command:cmdIf { label++; }
        |cmdWhile
        |cmdAtribuition
        |cmdPrint
@@ -150,19 +145,35 @@ return:T_RETURN arithmeticExpression T_SEMICOLON {output.push_back("\treturn");}
       |T_RETURN T_SEMICOLON {output.push_back("\treturn");}
       ;
 
-cmdIf:T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
-     |T_IF T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block T_ELSE {} block
+cmdIf:iflabel T_OPEN_PARENTHESES logicExpression ifT block { labelGen(label,2); }
+     |iflabel T_OPEN_PARENTHESES logicExpression ifT endelseblock elset block { labelGen(label,3); }
      ;
 
-cmdWhile:T_WHILE T_OPEN_PARENTHESES logicExpression T_CLOSE_PARENTHESES block
+iflabel:T_IF
+       ;
+
+elset:T_ELSE { labelGen(label,2); }
+     ;
+
+ifT:T_CLOSE_PARENTHESES { go_to(label,2); labelGen(label,1); }
+    ;
+
+endelseblock: block { go_to(label,3); }
+            ;
+
+cmdWhile:T_WHILE whileIf logicExpression whileT block { go_to(label,2); labelGen(label,3); }
         ;
 
+whileT:T_CLOSE_PARENTHESES { go_to(label,3); labelGen(label,1); }
+    ;
+whileIf:T_OPEN_PARENTHESES { labelGen(label,2); }
+       ;
 cmdAtribuition:T_IDENTIFIER T_ATRIBUITION arithmeticExpression T_SEMICOLON {store($1);}
               |T_IDENTIFIER T_ATRIBUITION T_LITERAL T_SEMICOLON {string str = $3;output.push_back("\tldc \""+str+"\""); store($1);}
               ;
 
 cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printf("==>%d\n",$4);printEnd($4);}
-        |T_PRINT T_OPEN_PARENTHESES {printInit();} T_LITERAL T_CLOSE_PARENTHESES T_SEMICOLON {printEnd(STRING);}
+        |T_PRINT T_OPEN_PARENTHESES {printInit();} T_LITERAL T_CLOSE_PARENTHESES T_SEMICOLON { literalLoad($4); printEnd(STRING);}
         ;
 
 cmdRead:T_READ T_OPEN_PARENTHESES T_IDENTIFIER T_CLOSE_PARENTHESES T_SEMICOLON { var v =getSym($3);
@@ -198,8 +209,15 @@ arithmeticExpression: T_INTEGER_VALUE { output.push_back("\tldc "+to_string($1.i
         }
     ;
 
-logicExpression:arithmeticExpression T_LESS arithmeticExpression {output.push_back("\tif_icmplt "); output.push_back("\test");}
+logicExpression:arithmeticExpression T_LESS arithmeticExpression { compar("lt",label); }
+               |arithmeticExpression T_LESS_EQUALS arithmeticExpression { compar("le",label); }
+               |arithmeticExpression T_MORE arithmeticExpression { compar("mt",label); }
+               |arithmeticExpression T_MORE_EQUALS arithmeticExpression { compar("me",label); }
+               |arithmeticExpression T_EQUALS arithmeticExpression { compar("eq",label); }
+               |arithmeticExpression T_DIFERENT arithmeticExpression { compar("ne",label); }
                ;
+
+
 
 %%
 

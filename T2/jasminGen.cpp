@@ -2,6 +2,7 @@
 #include<fstream>
 
 
+
 void initFile(){
     output.push_back(".class public output");
     output.push_back(".super java/lang/Object");
@@ -44,13 +45,13 @@ void read(int type){
 	output.push_back("\tgetstatic java/lang/System/in Ljava/io/InputStream;");
 	output.push_back("\tinvokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V");
     if(type==STRING){
-	    output.push_back("\tinvokevirtual java/util/Scanner/nextLine()Ljava/lang/String;"); 
+	    output.push_back("\tinvokevirtual java/util/Scanner/nextLine()Ljava/lang/String;");
     }
     else if(type==INT){
-	    output.push_back("\tinvokevirtual java/util/Scanner/nextInt()I"); 
+	    output.push_back("\tinvokevirtual java/util/Scanner/nextInt()I");
     }
     else if(type==FLOAT){
-	    output.push_back("\tinvokevirtual java/util/Scanner/nextFloat()F"); 
+	    output.push_back("\tinvokevirtual java/util/Scanner/nextFloat()F");
     }
 }
 
@@ -120,4 +121,34 @@ void load(string name){
 
 void pen(string str){
     output.insert(output.end()-1,str);
+}
+
+void go_to(char to, int num){
+    string str = "\tgoto ";
+    str+=to;
+    str.append(to_string(num));
+    output.push_back(str);
+}
+
+void labelGen(char to, int num){
+    string str;
+    str+=to;
+    str.append(to_string(num));
+    str.append(":");
+    output.push_back(str);
+}
+
+void literalLoad(char* c){
+    string str = "\tldc \"";
+    str.append(c);
+    str.append("\"");
+    output.push_back(str);
+}
+
+void compar(string cm,char label){
+    string str = "\tif_icmp";
+    str.append(cm+" ");
+    str+=label;
+    str+="1";
+    output.push_back(str);
 }
