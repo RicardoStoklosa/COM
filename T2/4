@@ -174,7 +174,7 @@ cmdAtribuition:T_IDENTIFIER T_ATRIBUITION arithmeticExpression T_SEMICOLON {stor
               |T_IDENTIFIER T_ATRIBUITION T_LITERAL T_SEMICOLON {string str = $3;output.push_back("\tldc \""+str+"\""); store($1);}
               ;
 
-cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printf("==>%d\n",$4);printEnd($4);}
+cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printEnd($4);}
         |T_PRINT T_OPEN_PARENTHESES {printInit();} T_LITERAL T_CLOSE_PARENTHESES T_SEMICOLON { literalLoad($4); printEnd(STRING);}
         ;
 

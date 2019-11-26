@@ -89,16 +89,16 @@ functionList:functionList function { cleanSymTable(); }
             ;
 
 function:returnType T_IDENTIFIER T_OPEN_PARENTHESES declareParams T_CLOSE_PARENTHESES {
-        func($1,$2,symtable.size());cout<<"===="<<*itTmp<<endl<<endl;
-        } funcBlock { cout<<"===="<<*itTmp;mainEnd();showSymTable();itTmp->append(to_string(symtable.size()+1));}
+        func($1,$2,symtable.size());
+        } funcBlock { mainEnd();showSymTable();itTmp->append(to_string(symtable.size()+1));}
         |returnType T_IDENTIFIER T_OPEN_PARENTHESES {
         func($1,$2,symtable.size());
         } T_CLOSE_PARENTHESES funcBlock { mainEnd();showSymTable();itTmp->append(to_string(symtable.size()+1));}
         ;
 
 
-funcBlock:T_OPEN_BRACE declarations cmdList T_CLOSE_BRACE { cout<<"=<>==="<<*itTmp<<endl<<endl; }
-         |T_OPEN_BRACE cmdList T_CLOSE_BRACE { cout<<"=<>==="<<*itTmp<<endl<<endl; }
+funcBlock:T_OPEN_BRACE declarations cmdList T_CLOSE_BRACE
+         |T_OPEN_BRACE cmdList T_CLOSE_BRACE
          ;
 
 returnType:type {$$=tmp;}
@@ -178,6 +178,7 @@ whileIf:T_OPEN_PARENTHESES { $$=label;labelGen(label,2); }
        ;
 cmdAtribuition:T_IDENTIFIER T_ATRIBUITION arithmeticExpression T_SEMICOLON {store($1);}
               |T_IDENTIFIER T_ATRIBUITION T_LITERAL T_SEMICOLON {string str = $3;output.push_back("\tldc \""+str+"\""); store($1);}
+              |T_IDENTIFIER T_ATRIBUITION functionCall T_SEMICOLON {store($1);}
               ;
 
 cmdPrint:T_PRINT T_OPEN_PARENTHESES {printInit();} arithmeticExpression T_CLOSE_PARENTHESES T_SEMICOLON {printf("==>%d\n",$4);printEnd($4);}
@@ -221,8 +222,8 @@ arithmeticExpression: T_INTEGER_VALUE { output.push_back("\tldc "+to_string($1.i
 
 logicExpression:arithmeticExpression T_LESS arithmeticExpression { compar("lt",label); }
                |arithmeticExpression T_LESS_EQUALS arithmeticExpression { compar("le",label); }
-               |arithmeticExpression T_MORE arithmeticExpression { compar("mt",label); }
-               |arithmeticExpression T_MORE_EQUALS arithmeticExpression { compar("me",label); }
+               |arithmeticExpression T_MORE arithmeticExpression { compar("gt",label); }
+               |arithmeticExpression T_MORE_EQUALS arithmeticExpression { compar("ge",label); }
                |arithmeticExpression T_EQUALS arithmeticExpression { compar("eq",label); }
                |arithmeticExpression T_DIFERENT arithmeticExpression { compar("ne",label); }
                ;

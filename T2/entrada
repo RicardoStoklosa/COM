@@ -1,18 +1,28 @@
-int test(int a, int b){
-    while(b<a){
-        b=b+1;
-        if(b==3){
-            print("oi");
-        }
-        print(b);
+int factorial(int num){
+    int i,f;
+    i=1;
+    f=1;
+    while(i<=num){
+        f=f*i;
+        i=i+1;
     }
-    return 0;
+    return f;
 }
 {
     int b,c;
-    b=0;
+    string fac;
+    fac = "fatorial de";
     read(c);
-    test(c,b);
-
+    b=factorial(c);
+    print(fac);
+    print(c);
+    print("é igual a:");
+    print(b);
+    if(b>=25){
+        print("maior que 25");
+    }
+    else{
+        print("menor que 25");
+    }
     return;
 }
